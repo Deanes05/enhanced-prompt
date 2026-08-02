@@ -103,7 +103,7 @@ function initModeTabs() {
 
       modelSelectEl.value = "seo";
       updateActiveModelTag("seo");
-      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Market Intelligence`;
+      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-play"></i> [RUN SYSTEM EXECUTE]`;
     });
   }
 
@@ -120,7 +120,7 @@ function initModeTabs() {
 
       modelSelectEl.value = "image";
       updateActiveModelTag("image");
-      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Image`;
+      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-play"></i> [RUN IMAGE SYNTHESIS]`;
     });
   }
 
@@ -137,7 +137,7 @@ function initModeTabs() {
 
       modelSelectEl.value = "gemini";
       updateActiveModelTag("gemini");
-      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-sparkles"></i> Enhance Text Prompt`;
+      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-play"></i> [RUN PROMPT ENHANCER]`;
     });
   }
 }
@@ -283,7 +283,7 @@ async function enhancePrompt() {
       const responseText = await response.text();
 
       if (!responseText || !responseText.trim()) {
-        throw new Error("n8n returned an empty response. Check n8n Executions tab.");
+        throw new Error("n8n returned an empty response. Please re-import the updated website.json workflow into n8n to activate the fixed response node.");
       }
 
       if (!response.ok) {

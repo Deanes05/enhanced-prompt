@@ -4,16 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Prompt Studio | Powered by n8n Workflow</title>
-  <meta name="description"
-    content="Transform basic human prompts into high-performance AI prompts using top AI models (Gemini, ChatGPT, Claude, Grok) and n8n backend.">
+  <title>PROMPT STUDIO v8.7 | AMBER CRT TERMINAL</title>
+  <meta name="description" content="Vintage Amber CRT Terminal Interface for AI Market Intelligence, FLUX Image Generation, and Prompt Enhancement.">
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Share Tech Mono & VT323 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
 
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -22,201 +19,197 @@
 </head>
 
 <body>
-  <!-- Header / Navigation Bar -->
-  <header class="app-header">
-    <div class="header-container">
-      <div class="brand">
-        <div class="logo-icon">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
+  <!-- CRT Screen Scanline Overlay -->
+  <div class="crt-scanlines"></div>
+
+  <!-- Terminal Main Window Container -->
+  <div class="terminal-frame">
+
+    <!-- Terminal Header / Navigation Bar -->
+    <header class="app-header">
+      <div class="header-container">
+        <div class="brand">
+          <div class="logo-icon">
+            <i class="fa-solid fa-terminal"></i>
+          </div>
+          <div class="brand-text">
+            <h1>SYS_PROMPT_STUDIO <span class="badge-v">v8.7</span></h1>
+            <p class="brand-sub">AMBER CRT TERMINAL COMMAND CENTER</p>
+          </div>
         </div>
-        <div class="brand-text">
-          <h1>Prompt Studio <span class="badge-v">Pro</span></h1>
-          <p class="brand-sub">AI Analytics & Generation Studio</p>
+
+        <div class="header-actions">
+          <button id="webhook-settings-btn" class="btn-icon" title="Configure n8n Webhook URL">
+            <i class="fa-solid fa-gear"></i>
+            <span id="webhook-indicator" class="status-dot"></span>
+          </button>
+
+          <button id="toggle-history-btn" class="btn-secondary">
+            <i class="fa-solid fa-clock-rotate-left"></i> LOG_HISTORY
+          </button>
         </div>
       </div>
+    </header>
 
-      <div class="header-actions">
-        <button id="webhook-settings-btn" class="btn-icon" title="Configure n8n Webhook URL">
-          <i class="fa-solid fa-gear"></i>
-          <span id="webhook-indicator" class="status-dot"></span>
-        </button>
-
-        <button id="toggle-history-btn" class="btn-secondary">
-          <i class="fa-solid fa-clock-rotate-left"></i> History
-        </button>
+    <!-- Webhook Notice Banner if not configured -->
+    <div id="webhook-banner" class="webhook-banner hidden">
+      <div class="banner-content">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>SYS_NOTICE: RUNNING IN DEMO ENGINE MODE. CONNECT YOUR N8N WEBHOOK URL FOR LIVE AI EXECUTION.</span>
+        <button id="banner-config-btn" class="btn-banner">[CONNECT WEBHOOK]</button>
       </div>
     </div>
-  </header>
 
-  <!-- Webhook Notice Banner if not configured -->
-  <div id="webhook-banner" class="webhook-banner hidden">
-    <div class="banner-content">
-      <i class="fa-solid fa-circle-info"></i>
-      <span>Using <strong>Demo Engine Mode</strong>. Connect your <strong>n8n Webhook URL</strong> to enable live n8n AI execution.</span>
-      <button id="banner-config-btn" class="btn-banner">Connect n8n</button>
-    </div>
+    <main class="main-layout">
+      <!-- Mode Switcher Tabs (Terminal Function Keys) -->
+      <div class="mode-tabs">
+        <button id="tab-niche-search" class="mode-tab active">
+          <i class="fa-solid fa-magnifying-glass-chart"></i> [F1] NICHE ANALYTICS
+        </button>
+        <button id="tab-style-transfer" class="mode-tab">
+          <i class="fa-solid fa-image"></i> [F2] AI IMAGE GENERATOR
+        </button>
+        <button id="tab-text-prompt" class="mode-tab">
+          <i class="fa-solid fa-file-lines"></i> [F3] PROMPT ENHANCER
+        </button>
+      </div>
+
+      <!-- Prompt Input Panel -->
+      <section class="input-card card">
+        <!-- Niche Search Engine Inputs (Default active mode) -->
+        <div id="niche-search-container" class="niche-search-box">
+          <div class="search-bar-wrapper">
+            <span class="prompt-symbol">SYSTEM_KEYWORD&gt;</span>
+            <input type="text" id="niche-search-input" class="niche-input"
+              placeholder="ENTER TARGET NICHE OR KEYWORD QUERY..."
+              autocomplete="off">
+          </div>
+        </div>
+
+        <!-- Style Transfer Mode Inputs (Hidden in Niche Search mode) -->
+        <div id="style-transfer-container" class="transfer-inputs-grid hidden">
+          <!-- Image 1: Style Reference -->
+          <div class="ref-input-box card-inner">
+            <div class="ref-header">
+              <span class="ref-badge badge-style"><i class="fa-solid fa-paintbrush"></i> STYLE_REFERENCE&gt;</span>
+            </div>
+            <textarea id="style-ref-input" class="ref-textarea"
+              placeholder="ENTER IMAGE 1 STYLE DIRECTIVE (e.g. 3D Pixar cartoony style, volumetric lighting)..."
+              rows="2"></textarea>
+          </div>
+
+          <!-- Fusion Symbol -->
+          <div class="fusion-symbol">
+            <div class="plus-circle"><i class="fa-solid fa-plus"></i></div>
+          </div>
+
+          <!-- Image 2: Subject Reference -->
+          <div class="ref-input-box card-inner">
+            <div class="ref-header">
+              <span class="ref-badge badge-subject"><i class="fa-solid fa-user-astronaut"></i> SUBJECT_REFERENCE&gt;</span>
+            </div>
+            <textarea id="subject-ref-input" class="ref-textarea"
+              placeholder="ENTER IMAGE 2 SUBJECT DIRECTIVE (e.g. A playful golden retriever in astronaut gear)..."
+              rows="2"></textarea>
+          </div>
+        </div>
+
+        <!-- Standard Single Text Prompt (Hidden in Niche Search & Style Transfer mode) -->
+        <div id="single-prompt-container" class="textarea-wrapper hidden">
+          <span class="prompt-symbol">INPUT_PROMPT_TEXT&gt;</span>
+          <textarea id="raw-prompt"
+            placeholder="TYPE RAW PROMPT IDEA HERE (e.g. Write a blog post about video editing tips)..."
+            maxlength="2000"></textarea>
+          <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- Enhancement & Generation Options -->
+        <div class="options-bar">
+          <!-- Model Dropdown Selector -->
+          <div class="option-group">
+            <label for="model-select"><i class="fa-solid fa-robot"></i> ENGINE_TYPE:</label>
+            <div class="select-wrapper">
+              <select id="model-select" class="custom-select">
+                <option value="seo" selected>📈 SEO & AD REVENUE INTELLIGENCE</option>
+                <option value="trends">🌏 USA VS PH TREND ANALYTICS</option>
+                <option value="image">🎨 AI IMAGE GENERATOR (FLUX.1)</option>
+                <option value="gemini">📝 TEXT PROMPT ENHANCER</option>
+              </select>
+              <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+          </div>
+
+          <!-- Target Style Selection -->
+          <div class="option-group">
+            <label><i class="fa-solid fa-sliders"></i> FORMAT_STYLE:</label>
+            <div class="pill-selector">
+              <label class="pill-option active">
+                <input type="radio" name="prompt-style" value="detailed" checked>
+                <span>[DETAILED]</span>
+              </label>
+              <label class="pill-option">
+                <input type="radio" name="prompt-style" value="concise">
+                <span>[CONCISE]</span>
+              </label>
+              <label class="pill-option">
+                <input type="radio" name="prompt-style" value="creative">
+                <span>[CREATIVE]</span>
+              </label>
+              <label class="pill-option">
+                <input type="radio" name="prompt-style" value="system">
+                <span>[SYSTEM]</span>
+              </label>
+            </div>
+          </div>
+
+          <button id="enhance-btn" class="btn-primary btn-generate">
+            <span class="btn-text"><i class="fa-solid fa-play"></i> [RUN SYSTEM EXECUTE]</span>
+            <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> EXECUTING_SYSTEM_CALL...</span>
+          </button>
+        </div>
+
+        <div id="status-bar" class="status-bar hidden"></div>
+      </section>
+
+      <!-- Results Display Section -->
+      <section class="results-section">
+        <div class="section-title-bar">
+          <h2><i class="fa-solid fa-terminal"></i> OUTPUT_BUFFER_RESULT</h2>
+          <span class="comparison-tag" id="active-model-tag"><i class="fa-solid fa-microchip"></i> ENGINE: SEO & AD REVENUE INTELLIGENCE</span>
+        </div>
+
+        <div id="results-grid" class="results-grid">
+          <!-- Initial Placeholder State -->
+          <div class="empty-state card">
+            <div class="empty-icon"><i class="fa-solid fa-terminal"></i></div>
+            <h3>SYSTEM_READY: ENTER QUERY AND PRESS EXECUTE</h3>
+            <p>Select target command mode above, input parameters, and click <strong>[RUN SYSTEM EXECUTE]</strong>.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <div class="footer-container">
+        <p>SELECT A FILE AND CONFIRM OR PRESS CODE-? FOR HELP // SYS_STATUS: READY</p>
+        <div class="footer-links">
+          <a href="website.json" download><i class="fa-solid fa-download"></i> [DOWNLOAD_WORKFLOW_JSON]</a>
+        </div>
+      </div>
+    </footer>
   </div>
-
-  <main class="main-layout">
-    <!-- Mode Switcher Tabs -->
-    <div class="mode-tabs">
-      <button id="tab-niche-search" class="mode-tab active">
-        <i class="fa-solid fa-magnifying-glass-chart"></i> Niche Analytics
-      </button>
-      <button id="tab-style-transfer" class="mode-tab">
-        <i class="fa-solid fa-image"></i> AI Image Generator
-      </button>
-      <button id="tab-text-prompt" class="mode-tab">
-        <i class="fa-solid fa-file-lines"></i> Prompt Enhancer
-      </button>
-    </div>
-
-    <!-- Prompt Input Panel -->
-    <section class="input-card card">
-      <!-- Niche Search Engine Inputs (Default active mode) -->
-      <div id="niche-search-container" class="niche-search-box">
-        <div class="search-bar-wrapper">
-          <i class="fa-solid fa-magnifying-glass search-icon"></i>
-          <input type="text" id="niche-search-input" class="niche-input"
-            placeholder="Search any niche, keyword, or market topic (e.g. 'AI Video Editing', 'Pet Tech', 'Personal Finance')..."
-            autocomplete="off">
-        </div>
-        
-        <!-- Quick Niche Category Chips -->
-        <div class="style-presets">
-          <span class="preset-title"><i class="fa-solid fa-fire"></i> Quick Niche Ideas:</span>
-          <button type="button" class="niche-chip" data-niche="AI Video Generator & Editing Software">🤖 AI Tools</button>
-          <button type="button" class="niche-chip" data-niche="Smart Home Gadgets & Pet Tech Accessories">🐕 Pet Tech</button>
-          <button type="button" class="niche-chip" data-niche="Gen-Z Personal Finance & Crypto Investing Apps">💰 Personal Finance</button>
-          <button type="button" class="niche-chip" data-niche="Ergonomic Gaming Chairs & Streaming Gear">🎮 Gaming</button>
-          <button type="button" class="niche-chip" data-niche="Organic Skincare & Holistic Wellness Products">🌿 Wellness</button>
-        </div>
-      </div>
-
-      <!-- Style Transfer Mode Inputs (Hidden in Niche Search mode) -->
-      <div id="style-transfer-container" class="transfer-inputs-grid hidden">
-        <!-- Image 1: Style & Ambience -->
-        <div class="ref-input-box card-inner">
-          <div class="ref-header">
-            <span class="ref-badge badge-style"><i class="fa-solid fa-paintbrush"></i> Style Reference</span>
-          </div>
-          <textarea id="style-ref-input" class="ref-textarea"
-            placeholder="Describe Image 1 style (e.g., '3D Pixar cartoony style, vibrant pastel lighting, soft shadows')"
-            rows="2"></textarea>
-          
-          <!-- Quick Style Presets -->
-          <div class="style-presets">
-            <button type="button" class="preset-chip" data-preset="3D Pixar Cartoony style, vibrant saturated colors, soft studio lighting">🎨 3D Cartoony</button>
-            <button type="button" class="preset-chip" data-preset="Cyberpunk neon lighting, glowing rain reflections, futuristic dark aesthetic">⚡ Cyberpunk</button>
-            <button type="button" class="preset-chip" data-preset="Studio Ghibli hand-drawn anime aesthetic, warm sunlight">🌸 Anime</button>
-            <button type="button" class="preset-chip" data-preset="Photorealistic 8k cinematic studio portrait, 85mm lens bokeh">📸 Portrait</button>
-            <button type="button" class="preset-chip" data-preset="Classical oil painting, heavy brush strokes, Rembrandt lighting">🖼️ Oil Painting</button>
-          </div>
-        </div>
-
-        <!-- Fusion Symbol -->
-        <div class="fusion-symbol">
-          <div class="plus-circle"><i class="fa-solid fa-plus"></i></div>
-        </div>
-
-        <!-- Image 2: Subject Entity -->
-        <div class="ref-input-box card-inner">
-          <div class="ref-header">
-            <span class="ref-badge badge-subject"><i class="fa-solid fa-user-astronaut"></i> Subject Reference</span>
-          </div>
-          <textarea id="subject-ref-input" class="ref-textarea"
-            placeholder="Describe Image 2 subject (e.g., 'A playful golden retriever wearing space astronaut gear')"
-            rows="2"></textarea>
-        </div>
-      </div>
-
-      <!-- Standard Single Text Prompt (Hidden in Niche Search & Style Transfer mode) -->
-      <div id="single-prompt-container" class="textarea-wrapper hidden">
-        <textarea id="raw-prompt"
-          placeholder="Type your raw prompt idea here... (e.g., 'Write a blog post about video editing tips')"
-          maxlength="2000"></textarea>
-        <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-
-      <!-- Enhancement & Generation Options -->
-      <div class="options-bar">
-        <!-- Model Dropdown Selector -->
-        <div class="option-group">
-          <label for="model-select"><i class="fa-solid fa-robot"></i> Engine:</label>
-          <div class="select-wrapper">
-            <select id="model-select" class="custom-select">
-              <option value="seo" selected>📈 SEO & Ad Revenue Intelligence</option>
-              <option value="trends">🌏 USA vs Philippines Trend Analytics</option>
-              <option value="image">🎨 AI Image Generator (FLUX.1)</option>
-              <option value="gemini">📝 Text Prompt Enhancer</option>
-            </select>
-            <i class="fa-solid fa-chevron-down select-arrow"></i>
-          </div>
-        </div>
-
-        <!-- Target Style Selection -->
-        <div class="option-group">
-          <label><i class="fa-solid fa-sliders"></i> Target Style:</label>
-          <div class="pill-selector">
-            <label class="pill-option active">
-              <input type="radio" name="prompt-style" value="detailed" checked>
-              <span>Detailed & Structured</span>
-            </label>
-            <label class="pill-option">
-              <input type="radio" name="prompt-style" value="concise">
-              <span>Concise & Direct</span>
-            </label>
-            <label class="pill-option">
-              <input type="radio" name="prompt-style" value="creative">
-              <span>Creative & Vivid</span>
-            </label>
-            <label class="pill-option">
-              <input type="radio" name="prompt-style" value="system">
-              <span>System Prompt</span>
-            </label>
-          </div>
-        </div>
-
-        <button id="enhance-btn" class="btn-primary btn-generate">
-          <span class="btn-text"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Image 3 & Prompt</span>
-          <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> Synthesizing Image 3...</span>
-        </button>
-      </div>
-
-      <div id="status-bar" class="status-bar hidden"></div>
-    </section>
-
-    <!-- Results Display Section -->
-    <section class="results-section">
-      <div class="section-title-bar">
-        <h2><i class="fa-solid fa-layer-group"></i> Output & Generated Result</h2>
-        <span class="comparison-tag" id="active-model-tag"><i class="fa-brands fa-google"></i> Model: Google Gemini 3.5
-          Flash Lite</span>
-      </div>
-
-      <div id="results-grid" class="results-grid">
-        <!-- Initial Placeholder State -->
-        <div class="empty-state card">
-          <div class="empty-icon"><i class="fa-solid fa-wand-magic"></i></div>
-          <h3>Ready for Style Transfer & Image Generation</h3>
-          <p>Provide your <strong>Image 1 Style Reference</strong> and <strong>Image 2 Subject Reference</strong> above, then click <strong>Generate Image 3 & Prompt</strong> to fuse them together!</p>
-        </div>
-      </div>
-    </section>
-  </main>
 
   <!-- History Drawer -->
   <aside id="history-drawer" class="history-drawer">
     <div class="drawer-header">
-      <h3><i class="fa-solid fa-history"></i> Prompt History</h3>
+      <h3><i class="fa-solid fa-history"></i> LOG_HISTORY_BUFFER</h3>
       <button id="close-history-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div id="history-list" class="history-list">
-      <p class="history-empty">No history saved yet.</p>
+      <p class="history-empty">NO LOG HISTORY RECORDED.</p>
     </div>
     <div class="drawer-footer">
-      <button id="clear-history-btn" class="btn-secondary btn-full"><i class="fa-solid fa-trash-can"></i> Clear
-        History</button>
+      <button id="clear-history-btn" class="btn-secondary btn-full"><i class="fa-solid fa-trash-can"></i> [CLEAR_LOG_BUFFER]</button>
     </div>
   </aside>
   <div id="drawer-overlay" class="drawer-overlay"></div>
@@ -225,46 +218,31 @@
   <div id="settings-modal" class="modal">
     <div class="modal-content card">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-link"></i> n8n Webhook Configuration</h3>
+        <h3><i class="fa-solid fa-gear"></i> WEBHOOK_CONFIG_TERMINAL</h3>
         <button id="close-modal-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <p class="modal-desc">Enter your <strong>n8n Production Webhook URL</strong>. Your web app will send raw prompts
-          to this endpoint and display AI outputs.</p>
+        <p class="modal-desc">ENTER N8N PRODUCTION WEBHOOK ENDPOINT URL BELOW:</p>
 
         <div class="form-group">
-          <label for="webhook-url-input">n8n Production Webhook URL</label>
+          <label for="webhook-url-input">N8N_WEBHOOK_ENDPOINT_URL</label>
           <input type="url" id="webhook-url-input" placeholder="https://your-n8n-domain.com/webhook/enhance-promp"
             autocomplete="off">
-          <small class="help-text"><i class="fa-solid fa-circle-question"></i> Tip: Use the Production Webhook URL from
-            your <code>Webhook (Website Input)</code> node in n8n.</small>
         </div>
 
         <div class="form-group">
-          <label for="pollinations-key-input"><i class="fa-solid fa-key"></i> Pollinations API Key (Optional)</label>
+          <label for="pollinations-key-input">POLLINATIONS_API_KEY (OPTIONAL)</label>
           <input type="text" id="pollinations-key-input" placeholder="pk_... or sk_..." autocomplete="off">
-          <small class="help-text"><i class="fa-solid fa-circle-info"></i> Get your API key from <a href="https://enter.pollinations.ai" target="_blank" rel="noopener" style="color: var(--accent-primary);">enter.pollinations.ai</a> for higher rate limits.</small>
         </div>
 
         <div id="webhook-test-result" class="test-result"></div>
       </div>
       <div class="modal-footer">
-        <button id="test-webhook-btn" class="btn-secondary"><i class="fa-solid fa-plug"></i> Test Connection</button>
-        <button id="save-webhook-btn" class="btn-primary">Save Settings</button>
+        <button id="test-webhook-btn" class="btn-secondary"><i class="fa-solid fa-plug"></i> [TEST_CONNECTION]</button>
+        <button id="save-webhook-btn" class="btn-primary">[SAVE_CONFIGURATION]</button>
       </div>
     </div>
   </div>
-
-  <footer class="app-footer">
-    <div class="footer-container">
-      <p>© 2026 AI Prompt Studio | Open Source Web App & n8n Engine</p>
-      <div class="footer-links">
-        <a href="https://github.com/Deanes05/enhanced-prompt" target="_blank" rel="noopener"><i
-            class="fa-brands fa-github"></i> GitHub Repo</a>
-        <a href="website.json" download><i class="fa-solid fa-download"></i> Download n8n Workflow JSON</a>
-      </div>
-    </div>
-  </footer>
 
   <script src="app.js"></script>
 </body>
