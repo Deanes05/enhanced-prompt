@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Prompt Studio | Powered by n8n & OpenRouter</title>
+  <meta name="description" content="Transform basic human prompts into high-performance AI prompts using top free OpenRouter models (Nemotron 3 Ultra, Ling 3.0 Flash, Laguna S 2.1) and n8n backend.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Navigation Bar -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="logo-icon">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <div class="brand-text">
+          <h1>Prompt Studio <span class="badge-v">Pro</span></h1>
+          <p class="brand-sub">Top OpenRouter Free Models Architecture</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="model-badges">
+          <span class="badge badge-nemotron"><i class="fa-solid fa-microchip"></i> Nemotron 3</span>
+          <span class="badge badge-ling"><i class="fa-solid fa-bolt"></i> Ling 3.0</span>
+          <span class="badge badge-laguna"><i class="fa-solid fa-code"></i> Laguna S 2.1</span>
+        </div>
+
+        <button id="webhook-settings-btn" class="btn-icon" title="Configure n8n Webhook URL">
+          <i class="fa-solid fa-gear"></i>
+          <span id="webhook-indicator" class="status-dot"></span>
+        </button>
+
+        <button id="toggle-history-btn" class="btn-secondary">
+          <i class="fa-solid fa-clock-rotate-left"></i> History
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Webhook Notice Banner if not configured -->
+  <div id="webhook-banner" class="webhook-banner hidden">
+    <div class="banner-content">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>Using <strong>Demo Engine Mode</strong>. Connect your <strong>n8n Webhook URL</strong> to enable live OpenRouter multi-model responses.</span>
+      <button id="banner-config-btn" class="btn-banner">Connect n8n</button>
+    </div>
+  </div>
+
+  <main class="main-layout">
+    <!-- Prompt Input Panel -->
+    <section class="input-card card">
+      <div class="card-header">
+        <h2><i class="fa-solid fa-keyboard"></i> Raw Idea Input</h2>
+        <span id="char-count" class="meta-count">0 / 2000 chars</span>
+      </div>
+
+      <!-- Quick Template Chips -->
+      <div class="preset-chips">
+        <span class="chips-label">Quick Ideas:</span>
+        <button class="chip" data-prompt="Refactor this JavaScript function to make it clean, modular, and handle errors asynchronously.">💻 Code Refactor</button>
+        <button class="chip" data-prompt="Write a high-converting landing page headline, hook, and key benefit bullet points for an AI SaaS app.">✍️ SaaS Copy</button>
+        <button class="chip" data-prompt="Photorealistic cinematic shot of a futuristic cyberpunk city with neon rainy streets, 8k resolution, photorealistic lighting.">🎨 Midjourney Art</button>
+        <button class="chip" data-prompt="Act as a senior data analyst and break down how to analyze customer churn using SQL and Python.">🤖 Expert Persona</button>
+      </div>
+
+      <div class="textarea-wrapper">
+        <textarea id="raw-prompt" placeholder="Type your simple idea here... (e.g., 'Write a blog post about video editing tips for beginners')" maxlength="2000"></textarea>
+        <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Enhancement Options -->
+      <div class="options-bar">
+        <!-- Model Dropdown Selector -->
+        <div class="option-group">
+          <label for="model-select"><i class="fa-solid fa-robot"></i> Select AI Model:</label>
+          <div class="select-wrapper">
+            <select id="model-select" class="custom-select">
+              <option value="nemotron" selected>🟢 NVIDIA: Nemotron 3 Ultra (free)</option>
+              <option value="ling">⚡ Ling-3.0-flash (free)</option>
+              <option value="laguna">💻 Poolside: Laguna S 2.1 (free)</option>
+              <option value="all">✨ Compare All 3 Free Models Side-by-Side</option>
+            </select>
+            <i class="fa-solid fa-chevron-down select-arrow"></i>
+          </div>
+        </div>
+
+        <!-- Target Style Selection -->
+        <div class="option-group">
+          <label><i class="fa-solid fa-sliders"></i> Target Style:</label>
+          <div class="pill-selector">
+            <label class="pill-option active">
+              <input type="radio" name="prompt-style" value="detailed" checked>
+              <span>Detailed & Structured</span>
+            </label>
+            <label class="pill-option">
+              <input type="radio" name="prompt-style" value="concise">
+              <span>Concise & Direct</span>
+            </label>
+            <label class="pill-option">
+              <input type="radio" name="prompt-style" value="creative">
+              <span>Creative & Vivid</span>
+            </label>
+            <label class="pill-option">
+              <input type="radio" name="prompt-style" value="system">
+              <span>System Prompt</span>
+            </label>
+          </div>
+        </div>
+
+        <button id="enhance-btn" class="btn-primary">
+          <span class="btn-text"><i class="fa-solid fa-sparkles"></i> Enhance Prompt</span>
+          <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> Processing...</span>
+        </button>
+      </div>
+
+      <div id="status-bar" class="status-bar hidden"></div>
+    </section>
+
+    <!-- Results Display Section -->
+    <section class="results-section">
+      <div class="section-title-bar">
+        <h2><i class="fa-solid fa-layer-group"></i> Enhanced Prompt Output</h2>
+        <span class="comparison-tag" id="active-model-tag"><i class="fa-solid fa-microchip"></i> Model: NVIDIA Nemotron 3 Ultra</span>
+      </div>
+
+      <div id="results-grid" class="results-grid">
+        <!-- Initial Placeholder State -->
+        <div class="empty-state card">
+          <div class="empty-icon"><i class="fa-solid fa-wand-magic"></i></div>
+          <h3>Ready to Enhance Your Prompt</h3>
+          <p>Select your preferred AI model from the dropdown above, type your raw idea, and click <strong>Enhance Prompt</strong>. Your n8n backend will process it through that model.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- History Drawer -->
+  <aside id="history-drawer" class="history-drawer">
+    <div class="drawer-header">
+      <h3><i class="fa-solid fa-history"></i> Prompt History</h3>
+      <button id="close-history-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="history-list" class="history-list">
+      <p class="history-empty">No history saved yet.</p>
+    </div>
+    <div class="drawer-footer">
+      <button id="clear-history-btn" class="btn-secondary btn-full"><i class="fa-solid fa-trash-can"></i> Clear History</button>
+    </div>
+  </aside>
+  <div id="drawer-overlay" class="drawer-overlay"></div>
+
+  <!-- Settings Modal for n8n Webhook -->
+  <div id="settings-modal" class="modal">
+    <div class="modal-content card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-link"></i> n8n Webhook Configuration</h3>
+        <button id="close-modal-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Enter your <strong>n8n Production Webhook URL</strong>. Your web app will send raw prompts to this endpoint and display parallel AI outputs.</p>
+
+        <div class="form-group">
+          <label for="webhook-url-input">n8n Production Webhook URL</label>
+          <input type="url" id="webhook-url-input" placeholder="https://your-n8n-domain.com/webhook/enhanced-prompt" autocomplete="off">
+          <small class="help-text"><i class="fa-solid fa-circle-question"></i> Tip: Use the Production Webhook URL from your <code>Website Input</code> node in n8n (not the test URL).</small>
+        </div>
+
+        <div id="webhook-test-result" class="test-result"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="test-webhook-btn" class="btn-secondary"><i class="fa-solid fa-plug"></i> Test Connection</button>
+        <button id="save-webhook-btn" class="btn-primary">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>© 2026 AI Prompt Studio | Open Source GitHub Web App & n8n Engine</p>
+      <div class="footer-links">
+        <a href="https://github.com/Deanes05/enhanced-prompt" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> GitHub Repo</a>
+        <a href="prompt-enhancer-workflow.json" download><i class="fa-solid fa-download"></i> Download n8n Workflow JSON</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
