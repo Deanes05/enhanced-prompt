@@ -103,7 +103,7 @@ function initModeTabs() {
 
       modelSelectEl.value = "seo";
       updateActiveModelTag("seo");
-      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-magnifying-glass-chart"></i> Analyze SEO & Market Intelligence`;
+      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Market Intelligence`;
     });
   }
 
@@ -120,7 +120,7 @@ function initModeTabs() {
 
       modelSelectEl.value = "image";
       updateActiveModelTag("image");
-      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Image 3 & Prompt`;
+      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> Generate Image`;
     });
   }
 
@@ -150,7 +150,7 @@ function initNicheChips() {
         nicheSearchInput.value = niche;
         document.querySelectorAll(".niche-chip").forEach((c) => c.classList.remove("active"));
         chip.classList.add("active");
-        showStatus(`Selected Trending Niche: "${chip.textContent.trim()}"`, "info");
+        showStatus(`Selected Niche: "${chip.textContent.trim()}"`, "info");
       }
     });
   });
@@ -232,7 +232,7 @@ async function enhancePrompt() {
   if (currentMode === "niche-search") {
     rawPrompt = nicheSearchInput ? nicheSearchInput.value.trim() : "";
     if (!rawPrompt) {
-      showStatus("Please enter a niche keyword or topic to search.", "error");
+      showStatus("Please enter a niche keyword or topic.", "error");
       return;
     }
     subjectRef = rawPrompt;
@@ -256,7 +256,7 @@ async function enhancePrompt() {
 
   updateActiveModelTag(selectedModel);
   setLoadingState(true);
-  showStatus(`Analyzing request using engine: ${selectedModel.toUpperCase()}...`, "info");
+  showStatus(`Executing request... Engine: ${selectedModel.toUpperCase()}`, "info");
 
   renderLoadingSkeletons(selectedModel);
 
@@ -283,20 +283,18 @@ async function enhancePrompt() {
       const responseText = await response.text();
 
       if (!responseText || !responseText.trim()) {
-        throw new Error(
-          "n8n returned an empty (0-byte) response. Check your n8n Executions tab — an upstream node likely failed before reaching the Respond node."
-        );
+        throw new Error("n8n returned an empty response. Check n8n Executions tab.");
       }
 
       if (!response.ok) {
-        throw new Error(`n8n Webhook responded with status ${response.status}: ${responseText.substring(0, 150)}`);
+        throw new Error(`n8n responded with status ${response.status}: ${responseText.substring(0, 150)}`);
       }
 
       let data;
       try {
         data = JSON.parse(responseText);
       } catch (e) {
-        throw new Error(`Invalid JSON returned from n8n: ${responseText.substring(0, 150)}`);
+        throw new Error(`Invalid JSON returned: ${responseText.substring(0, 150)}`);
       }
 
       const enhancedPromptText = data.enhanced_prompt || data.prompt || (data.content && data.content.parts && data.content.parts[0]?.text);
@@ -312,20 +310,18 @@ async function enhancePrompt() {
         payload_data: data
       }];
     } else {
-      // Demo Engine Mode with rich Analytics & Metrics
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Demo Mode
+      await new Promise(resolve => setTimeout(resolve, 800));
       variations = generateDemoVariations(rawPrompt, styleRef, subjectRef, selectedStyle, selectedModel);
-      showStatus("Generated using Demo Engine Mode. Connect n8n Webhook URL for live workflow execution.", "info");
+      showStatus("Generated using Demo Engine Mode.", "info");
     }
 
     if (variations.length === 0) {
-      throw new Error("No analytics or responses returned from workflow.");
+      throw new Error("No responses returned from workflow.");
     }
 
     renderResults(variations);
-    if (webhookUrl) {
-      showStatus("Successfully retrieved market intelligence & analytics!", "success");
-    }
+    showStatus("Execution completed successfully!", "success");
     saveToHistory(rawPrompt, variations);
 
   } catch (err) {
@@ -339,24 +335,24 @@ async function enhancePrompt() {
 
 function updateActiveModelTag(model) {
   if (model === "seo") {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> Engine: High-SEO & Ad Revenue Intelligence`;
+    activeModelTagEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> Engine: SEO & Ad Revenue Intelligence`;
   } else if (model === "trends") {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-earth-americas"></i> Engine: USA vs Philippines Trend Intelligence`;
+    activeModelTagEl.innerHTML = `<i class="fa-solid fa-earth-americas"></i> Engine: USA vs PH Trends & Analytics`;
   } else if (model === "image") {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-palette"></i> Engine: Pollinations Image Generator`;
+    activeModelTagEl.innerHTML = `<i class="fa-solid fa-image"></i> Engine: Pure Image Generator (FLUX)`;
   } else {
-    activeModelTagEl.innerHTML = `<i class="fa-brands fa-google"></i> Engine: Google Gemini Prompt Enhancer`;
+    activeModelTagEl.innerHTML = `<i class="fa-solid fa-file-lines"></i> Engine: Pure Text Prompt Enhancer`;
   }
 }
 
 function getModelLabel(modelKey) {
   if (modelKey === "seo") return "SEO & Ad Revenue Intelligence";
   if (modelKey === "trends") return "USA vs Philippines Regional Trends";
-  if (modelKey === "image") return "Pollinations Image Generator";
+  if (modelKey === "image") return "Pollinations FLUX Image Generator";
   return "Google Gemini Prompt Enhancer";
 }
 
-// Render Analytics & Results Dashboard
+// Strictly Decoupled Result Renderers
 function renderResults(variations) {
   resultsGridEl.innerHTML = "";
 
@@ -364,8 +360,7 @@ function renderResults(variations) {
     const modelType = v.model_type || modelSelectEl.value;
     const label = v.label || getModelLabel(modelType);
     const text = v.prompt || "";
-    const rawData = v.payload_data || {};
-
+    
     let parsedJson = null;
     try {
       if (typeof text === "string" && text.trim().startsWith("{")) {
@@ -373,227 +368,291 @@ function renderResults(variations) {
       }
     } catch (e) {}
 
-    const card = document.createElement("div");
-    card.className = `result-card card-analytics`;
-
-    if (modelType === "seo") {
-      const seoData = parsedJson || {
-        niche: v.subject_ref || "Selected Keyword Niche",
-        seo_search_volume: "48,500 / mo (High Demand)",
-        seo_difficulty: "38/100 (Moderate)",
-        estimated_rpm: "$22.50 - $42.00 per 1k views",
-        estimated_cpc: "$2.10 - $5.80",
-        est_monthly_revenue_potential: "$4,500 - $12,000",
-        pros: [
-          "High advertiser competition & premium affiliate payouts.",
-          "Strong evergreen search interest with year-round stability.",
-          "Abundant low-competition long-tail keyword clusters."
-        ],
-        cons: [
-          "Established media sites hold top 3 positions for seed keywords.",
-          "Requires structured content strategy & topic cluster authority."
-        ],
-        summary: "High ROI niche opportunity. Ideal for niche sites, YouTube automation, and SaaS affiliate landing pages."
-      };
-
-      card.innerHTML = `
-        <div class="result-header">
-          <div class="model-name" style="color: #10b981;">
-            <i class="fa-solid fa-chart-line"></i>
-            <span>${escapeHtml(label)} Metrics</span>
-          </div>
-          <div class="result-actions">
-            <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>Copy Metrics</span></button>
-          </div>
-        </div>
-
-        <div class="niche-title-banner">
-          <span class="niche-tag"><i class="fa-solid fa-tag"></i> Keyword Query:</span>
-          <h3>"${escapeHtml(seoData.niche)}"</h3>
-        </div>
-
-        <!-- Metrics Dashboard -->
-        <div class="metrics-grid">
-          <div class="metric-card metric-green">
-            <span class="metric-label"><i class="fa-solid fa-hand-holding-dollar"></i> Est. Monthly Revenue</span>
-            <span class="metric-value">${escapeHtml(seoData.est_monthly_revenue_potential)}</span>
-          </div>
-          <div class="metric-card metric-purple">
-            <span class="metric-label"><i class="fa-solid fa-eye"></i> AdSense / Ad RPM</span>
-            <span class="metric-value">${escapeHtml(seoData.estimated_rpm)}</span>
-          </div>
-          <div class="metric-card metric-blue">
-            <span class="metric-label"><i class="fa-solid fa-arrow-trend-up"></i> Search Volume</span>
-            <span class="metric-value">${escapeHtml(seoData.seo_search_volume)}</span>
-          </div>
-          <div class="metric-card metric-orange">
-            <span class="metric-label"><i class="fa-solid fa-shield-halved"></i> SEO Difficulty</span>
-            <span class="metric-value">${escapeHtml(seoData.seo_difficulty)}</span>
-          </div>
-        </div>
-
-        <!-- Pros & Cons Grid -->
-        <div class="pros-cons-container">
-          <div class="pros-box">
-            <h4><i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Niche Pros & Advantages</h4>
-            <ul>
-              ${(seoData.pros || []).map(p => `<li><i class="fa-solid fa-check"></i> ${escapeHtml(p)}</li>`).join("")}
-            </ul>
-          </div>
-          <div class="cons-box">
-            <h4><i class="fa-solid fa-triangle-exclamation" style="color: #f43f5e;"></i> Risks & Challenges</h4>
-            <ul>
-              ${(seoData.cons || []).map(c => `<li><i class="fa-solid fa-xmark"></i> ${escapeHtml(c)}</li>`).join("")}
-            </ul>
-          </div>
-        </div>
-
-        <div class="summary-box">
-          <strong><i class="fa-solid fa-lightbulb"></i> Strategic Recommendation:</strong>
-          <p>${escapeHtml(seoData.summary)}</p>
-        </div>
-      `;
-
-    } else if (modelType === "trends") {
-      const trendData = parsedJson || {
-        niche: v.subject_ref || "Selected Market Topic",
-        usa_popularity: "🔥 95/100 (Top 3 Trending Category in the US)",
-        philippines_popularity: "📈 89/100 (Surging Interest in PH E-Commerce)",
-        usa_insights: "US audience focuses on high-efficiency tools, subscription flexibility, and premium brand value.",
-        philippines_insights: "PH audience relies heavily on Shopee/Lazada ecosystem, GCash digital wallet, and TikTok shop influencers.",
-        target_demographics: "Ages 18-34 | Tech Professionals, Online Entrepreneurs & Gen-Z Creators",
-        growth_trajectory: "🚀 +44% Year-over-Year Search Expansion",
-        multidisciplinary_stats: [
-          "74% Mobile traffic dominance in PH vs 62% in the US",
-          "Peak buying hours: 8 PM - 11 PM PH local time",
-          "Top channels: Google Search (48%), TikTok Shop (32%), YouTube Shorts (20%)"
-        ],
-        summary: "Strong dual-market potential with high virality upside in the Philippines and high purchasing power in the USA."
-      };
-
-      card.innerHTML = `
-        <div class="result-header">
-          <div class="model-name" style="color: #38bdf8;">
-            <i class="fa-solid fa-earth-americas"></i>
-            <span>${escapeHtml(label)}</span>
-          </div>
-          <div class="result-actions">
-            <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>Copy Insights</span></button>
-          </div>
-        </div>
-
-        <div class="niche-title-banner">
-          <span class="niche-tag"><i class="fa-solid fa-earth-asia"></i> Regional Comparison:</span>
-          <h3>"${escapeHtml(trendData.niche)}"</h3>
-        </div>
-
-        <!-- Regional USA vs PH Cards -->
-        <div class="regional-grid">
-          <div class="region-card usa-card">
-            <div class="region-flag">🇺🇸 U.S.A. Market Trends</div>
-            <div class="region-pop">${escapeHtml(trendData.usa_popularity)}</div>
-            <p class="region-desc">${escapeHtml(trendData.usa_insights)}</p>
-          </div>
-
-          <div class="region-card ph-card">
-            <div class="region-flag">🇵🇭 Philippines Market Trends</div>
-            <div class="region-pop">${escapeHtml(trendData.philippines_popularity)}</div>
-            <p class="region-desc">${escapeHtml(trendData.philippines_insights)}</p>
-          </div>
-        </div>
-
-        <!-- Multidisciplinary Stats -->
-        <div class="multidisciplinary-box">
-          <h4><i class="fa-solid fa-chart-pie"></i> Multidisciplinary Analytics & Audience Breakdown</h4>
-          <div class="demographics-row">
-            <span><strong>Target Demographics:</strong> ${escapeHtml(trendData.target_demographics)}</span>
-            <span><strong>Growth Trajectory:</strong> ${escapeHtml(trendData.growth_trajectory)}</span>
-          </div>
-          <ul class="stats-list">
-            ${(trendData.multidisciplinary_stats || []).map(s => `<li><i class="fa-solid fa-chart-simple"></i> ${escapeHtml(s)}</li>`).join("")}
-          </ul>
-        </div>
-
-        <div class="summary-box">
-          <strong><i class="fa-solid fa-bullseye"></i> Executive Summary:</strong>
-          <p>${escapeHtml(trendData.summary)}</p>
-        </div>
-      `;
-
-    } else if (modelType === "image" || v.image_url) {
+    // 1. PURE TEXT PROMPT ENHANCER (Strictly Text Only, No Image Container)
+    if (modelType === "gemini") {
+      renderPureTextCard(label, text);
+    }
+    // 2. PURE IMAGE GENERATOR (Strictly Image Only + Generation Notes)
+    else if (modelType === "image") {
       const imageUrl = v.image_url || buildPollinationsImageUrl(text);
-      card.className = `result-card card-gemini fusion-result-card`;
-      card.innerHTML = `
-        <div class="result-header">
-          <div class="model-name"><i class="fa-solid fa-palette" style="color: #4285f4"></i> <span>${escapeHtml(label)}</span></div>
-          <div class="result-actions">
-            <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>Copy Prompt</span></button>
-          </div>
-        </div>
-        <div class="generated-image-container">
-          <div class="image-header">
-            <span class="image-title"><i class="fa-solid fa-image"></i> Image 3 Output (gen.pollinations.ai)</span>
-            <span class="image-badge">FLUX Model | 1024 x 1024</span>
-          </div>
-          <div class="image-preview-wrapper">
-            <div class="image-skeleton-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Rendering Image 3...</div>
-            <img src="${escapeHtml(imageUrl)}" alt="Generated Image 3" class="generated-image-preview" onload="this.previousElementSibling.style.display='none'; this.style.opacity='1';" onerror="this.previousElementSibling.innerHTML='Failed to load image preview';">
-          </div>
-          <div class="image-actions">
-            <a href="${escapeHtml(imageUrl)}" target="_blank" rel="noopener" class="btn-img-action"><i class="fa-solid fa-expand"></i> Open Fullsize</a>
-            <button type="button" class="btn-img-action copy-img-url-btn" data-url="${escapeHtml(imageUrl)}"><i class="fa-solid fa-link"></i> Copy Link</button>
-            <a href="${escapeHtml(imageUrl)}" download="generated_image_3.jpg" target="_blank" class="btn-img-action primary-action"><i class="fa-solid fa-download"></i> Download</a>
-          </div>
-        </div>
-        <div class="prompt-section">
-          <div class="section-label"><i class="fa-solid fa-code"></i> Master Prompt:</div>
-          <pre class="prompt-output">${escapeHtml(text)}</pre>
-        </div>
-      `;
-    } else {
-      card.className = `result-card card-gemini`;
-      card.innerHTML = `
-        <div class="result-header">
-          <div class="model-name"><i class="fa-brands fa-google" style="color: #4285f4"></i> <span>${escapeHtml(label)}</span></div>
-          <div class="result-actions">
-            <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>Copy</span></button>
-          </div>
-        </div>
-        <pre class="prompt-output">${escapeHtml(text)}</pre>
-      `;
+      renderPureImageCard(label, imageUrl, text, v.style_ref, v.subject_ref);
     }
-
-    // Copy Handler
-    const copyBtn = card.querySelector(".copy-btn");
-    if (copyBtn) {
-      copyBtn.addEventListener("click", () => {
-        const textToCopy = parsedJson ? JSON.stringify(parsedJson, null, 2) : text;
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          copyBtn.classList.add("copied");
-          copyBtn.innerHTML = `<i class="fa-solid fa-check"></i> <span>Copied!</span>`;
-          setTimeout(() => {
-            copyBtn.classList.remove("copied");
-            copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> <span>Copy</span>`;
-          }, 2000);
-        });
-      });
+    // 3. SEO & AD REVENUE INTELLIGENCE (Compact, Detailed Table Dashboard, No Random Recommendations)
+    else if (modelType === "seo") {
+      renderCompactSeoCard(label, parsedJson, v.subject_ref);
     }
-
-    resultsGridEl.appendChild(card);
+    // 4. USA VS PH REGIONAL TRENDS (Compact Regional Analytics)
+    else if (modelType === "trends") {
+      renderCompactTrendsCard(label, parsedJson, v.subject_ref);
+    }
+    // Fallback: Default Text
+    else {
+      renderPureTextCard(label, text);
+    }
   });
+}
+
+// Renderer 1: Pure Text Only (No Image container rendered)
+function renderPureTextCard(label, text) {
+  const card = document.createElement("div");
+  card.className = "result-card card-gemini compact-card";
+  card.innerHTML = `
+    <div class="result-header">
+      <div class="model-name">
+        <i class="fa-solid fa-file-code" style="color: #4285f4"></i>
+        <span>${escapeHtml(label)}</span>
+        <span class="badge-text-only">Pure Text Output</span>
+      </div>
+      <div class="result-actions">
+        <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>Copy Text</span></button>
+      </div>
+    </div>
+    <div class="prompt-body-wrapper">
+      <pre class="prompt-output">${escapeHtml(text)}</pre>
+    </div>
+    <div class="result-footer">
+      <span><i class="fa-solid fa-align-left"></i> ${getWordCount(text)} words | ${text.length} chars</span>
+      <span>Production Ready Text Prompt</span>
+    </div>
+  `;
+
+  bindCopyButton(card, text);
+  resultsGridEl.appendChild(card);
+}
+
+// Renderer 2: Pure Image Only + Additional Notes
+function renderPureImageCard(label, imageUrl, promptText, styleRef, subjectRef) {
+  const card = document.createElement("div");
+  card.className = "result-card card-image compact-card";
+  
+  card.innerHTML = `
+    <div class="result-header">
+      <div class="model-name">
+        <i class="fa-solid fa-image" style="color: #a855f7"></i>
+        <span>${escapeHtml(label)}</span>
+        <span class="badge-image-only">1024 x 1024 FLUX</span>
+      </div>
+      <div class="result-actions">
+        <button class="btn-img-action copy-img-url-btn" data-url="${escapeHtml(imageUrl)}"><i class="fa-solid fa-link"></i> Copy URL</button>
+        <a href="${escapeHtml(imageUrl)}" download="generated_image_3.jpg" target="_blank" class="btn-img-action primary-action"><i class="fa-solid fa-download"></i> Download Image</a>
+      </div>
+    </div>
+
+    <!-- Prominent Image Display -->
+    <div class="generated-image-container compact-image-box">
+      <div class="image-preview-wrapper compact-wrapper">
+        <div class="image-skeleton-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Rendering Image...</div>
+        <img src="${escapeHtml(imageUrl)}" alt="Generated Image 3" class="generated-image-preview" onload="this.previousElementSibling.style.display='none'; this.style.opacity='1';" onerror="this.previousElementSibling.innerHTML='Failed to load image preview';">
+      </div>
+    </div>
+
+    <!-- Additional Generation Notes Drawer -->
+    <div class="generation-notes-box">
+      <div class="notes-header"><i class="fa-solid fa-sliders"></i> Generation Notes & Parameters:</div>
+      <div class="notes-grid">
+        <div class="note-item"><strong>Engine Model:</strong> Pollinations FLUX.1 Neural Synthesis</div>
+        <div class="note-item"><strong>Dimensions:</strong> 1024 x 1024 px (1:1 Square)</div>
+        <div class="note-item"><strong>Style Reference:</strong> ${escapeHtml(styleRef || 'Cinematic Volumetric Lighting')}</div>
+        <div class="note-item"><strong>Subject Reference:</strong> ${escapeHtml(subjectRef || promptText || 'Masterpiece Subject')}</div>
+      </div>
+      <div class="prompt-snippet-box">
+        <span class="snippet-label">Synthesized Engine Prompt:</span>
+        <code>${escapeHtml(promptText)}</code>
+      </div>
+    </div>
+  `;
+
+  // Copy Image Link Handler
+  const copyImgUrlBtn = card.querySelector(".copy-img-url-btn");
+  if (copyImgUrlBtn) {
+    copyImgUrlBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(imageUrl).then(() => {
+        copyImgUrlBtn.innerHTML = `<i class="fa-solid fa-check"></i> Copied!`;
+        setTimeout(() => {
+          copyImgUrlBtn.innerHTML = `<i class="fa-solid fa-link"></i> Copy URL`;
+        }, 2000);
+      });
+    });
+  }
+
+  resultsGridEl.appendChild(card);
+}
+
+// Renderer 3: Compact SEO & Ad Revenue Analytics (Clean, Detailed Table, No Random Recommendations)
+function renderCompactSeoCard(label, parsedJson, subjectRef) {
+  const seoData = parsedJson || {
+    niche: subjectRef || "Target Keyword Niche",
+    seo_search_volume: "48,500 / mo",
+    seo_difficulty: "38/100 (Moderate)",
+    estimated_rpm: "$22.50 - $42.00",
+    estimated_cpc: "$2.10 - $5.80",
+    est_monthly_revenue_potential: "$4,500 - $12,000",
+    pros: [
+      "High advertiser competition & premium affiliate payouts.",
+      "Evergreen search volume with consistent year-round interest.",
+      "Low competition in long-tail search query variations."
+    ],
+    cons: [
+      "Established media domains hold top 3 positions for primary seed keywords.",
+      "Requires publishing high-authority structured content."
+    ]
+  };
+
+  const card = document.createElement("div");
+  card.className = "result-card card-analytics compact-card";
+  card.innerHTML = `
+    <div class="result-header">
+      <div class="model-name" style="color: #10b981;">
+        <i class="fa-solid fa-chart-column"></i>
+        <span>${escapeHtml(label)}</span>
+        <span class="badge-analytics">Niche Financial Intelligence</span>
+      </div>
+      <div class="result-actions">
+        <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>Copy Data</span></button>
+      </div>
+    </div>
+
+    <div class="niche-title-banner compact-banner">
+      <span class="niche-tag">Target Keyword:</span>
+      <h3>"${escapeHtml(seoData.niche)}"</h3>
+    </div>
+
+    <!-- High-Density Metrics Bar -->
+    <div class="metrics-grid compact-grid">
+      <div class="metric-card metric-green">
+        <span class="metric-label">Est. Monthly Revenue</span>
+        <span class="metric-value">${escapeHtml(seoData.est_monthly_revenue_potential)}</span>
+      </div>
+      <div class="metric-card metric-purple">
+        <span class="metric-label">AdSense / Ad RPM</span>
+        <span class="metric-value">${escapeHtml(seoData.estimated_rpm)}</span>
+      </div>
+      <div class="metric-card metric-blue">
+        <span class="metric-label">Search Volume</span>
+        <span class="metric-value">${escapeHtml(seoData.seo_search_volume)}</span>
+      </div>
+      <div class="metric-card metric-orange">
+        <span class="metric-label">SEO Difficulty</span>
+        <span class="metric-value">${escapeHtml(seoData.seo_difficulty)}</span>
+      </div>
+    </div>
+
+    <!-- Compact Pros & Cons Data Table (Clean, detailed, free of random filler) -->
+    <div class="pros-cons-container compact-pc">
+      <div class="pros-box compact-box">
+        <h4><i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Key Market Advantages (Pros)</h4>
+        <ul>
+          ${(seoData.pros || []).map(p => `<li><i class="fa-solid fa-check"></i> ${escapeHtml(p)}</li>`).join("")}
+        </ul>
+      </div>
+      <div class="cons-box compact-box">
+        <h4><i class="fa-solid fa-circle-xmark" style="color: #f43f5e;"></i> Niche Entry Risks (Cons)</h4>
+        <ul>
+          ${(seoData.cons || []).map(c => `<li><i class="fa-solid fa-xmark"></i> ${escapeHtml(c)}</li>`).join("")}
+        </ul>
+      </div>
+    </div>
+  `;
+
+  bindCopyButton(card, JSON.stringify(seoData, null, 2));
+  resultsGridEl.appendChild(card);
+}
+
+// Renderer 4: Compact USA vs Philippines Regional Trends
+function renderCompactTrendsCard(label, parsedJson, subjectRef) {
+  const trendData = parsedJson || {
+    niche: subjectRef || "Target Keyword Niche",
+    usa_popularity: "🔥 95/100 (Top 3 Search Trend)",
+    philippines_popularity: "📈 89/100 (Surging PH Interest)",
+    usa_insights: "US market favors high-end subscriptions, desktop/mobile convenience, and fast shipping.",
+    philippines_insights: "PH market favors Shopee/Lazada integrations, GCash payments, and TikTok influencer trends.",
+    target_demographics: "Ages 18-34 | Tech Professionals & Content Creators",
+    growth_trajectory: "🚀 +44% YoY Search Growth",
+    multidisciplinary_stats: [
+      "74% Mobile traffic share in PH vs 62% in US",
+      "Peak engagement hours: 8 PM - 11 PM local time",
+      "Top channels: Google Search (48%), TikTok (32%), YouTube Shorts (20%)"
+    ]
+  };
+
+  const card = document.createElement("div");
+  card.className = "result-card card-analytics compact-card";
+  card.innerHTML = `
+    <div class="result-header">
+      <div class="model-name" style="color: #38bdf8;">
+        <i class="fa-solid fa-earth-americas"></i>
+        <span>${escapeHtml(label)}</span>
+        <span class="badge-analytics">Regional Trend Analytics</span>
+      </div>
+      <div class="result-actions">
+        <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>Copy Data</span></button>
+      </div>
+    </div>
+
+    <div class="niche-title-banner compact-banner">
+      <span class="niche-tag">Regional Query:</span>
+      <h3>"${escapeHtml(trendData.niche)}"</h3>
+    </div>
+
+    <!-- Regional Comparison Cards -->
+    <div class="regional-grid compact-grid">
+      <div class="region-card usa-card compact-region">
+        <div class="region-flag">🇺🇸 U.S.A. Market Insights</div>
+        <div class="region-pop">${escapeHtml(trendData.usa_popularity)}</div>
+        <p class="region-desc">${escapeHtml(trendData.usa_insights)}</p>
+      </div>
+
+      <div class="region-card ph-card compact-region">
+        <div class="region-flag">🇵🇭 Philippines Market Insights</div>
+        <div class="region-pop">${escapeHtml(trendData.philippines_popularity)}</div>
+        <p class="region-desc">${escapeHtml(trendData.philippines_insights)}</p>
+      </div>
+    </div>
+
+    <!-- Compact Multidisciplinary Stats -->
+    <div class="multidisciplinary-box compact-box">
+      <h4><i class="fa-solid fa-chart-pie"></i> Audience & Multidisciplinary Stats</h4>
+      <div class="demographics-row">
+        <span><strong>Demographics:</strong> ${escapeHtml(trendData.target_demographics)}</span>
+        <span><strong>Trajectory:</strong> ${escapeHtml(trendData.growth_trajectory)}</span>
+      </div>
+      <ul class="stats-list">
+        ${(trendData.multidisciplinary_stats || []).map(s => `<li><i class="fa-solid fa-chart-simple"></i> ${escapeHtml(s)}</li>`).join("")}
+      </ul>
+    </div>
+  `;
+
+  bindCopyButton(card, JSON.stringify(trendData, null, 2));
+  resultsGridEl.appendChild(card);
+}
+
+function bindCopyButton(card, textToCopy) {
+  const copyBtn = card.querySelector(".copy-btn");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        copyBtn.classList.add("copied");
+        copyBtn.innerHTML = `<i class="fa-solid fa-check"></i> <span>Copied!</span>`;
+        setTimeout(() => {
+          copyBtn.classList.remove("copied");
+          copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> <span>Copy</span>`;
+        }, 2000);
+      });
+    });
+  }
 }
 
 function renderLoadingSkeletons(selectedModel) {
   const label = getModelLabel(selectedModel);
   resultsGridEl.innerHTML = `
-    <div class="result-card card-analytics">
+    <div class="result-card card-analytics compact-card">
       <div class="result-header">
-        <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> ${escapeHtml(label)} analyzing market data...</div>
+        <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Processing ${escapeHtml(label)}...</div>
       </div>
-      <div class="loading-fusion-box">
+      <div class="loading-fusion-box compact-loading">
         <div class="skeleton-image-placeholder">
-          <i class="fa-solid fa-chart-simple fa-bounce"></i>
-          <p>Analyzing Search Volume, Ad Revenues, Pros/Cons & USA vs Philippines Market Trends...</p>
+          <i class="fa-solid fa-microchip fa-bounce"></i>
+          <p>Processing clean, detailed data for engine: ${selectedModel.toUpperCase()}...</p>
         </div>
       </div>
     </div>
@@ -602,17 +661,10 @@ function renderLoadingSkeletons(selectedModel) {
 
 function renderErrorState(errorMsg) {
   resultsGridEl.innerHTML = `
-    <div class="empty-state card">
+    <div class="empty-state card compact-card">
       <div class="empty-icon" style="color: #f43f5e; background: rgba(244, 63, 94, 0.1);"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <h3>Failed to Execute Market Intelligence</h3>
+      <h3>Execution Error</h3>
       <p>${escapeHtml(errorMsg)}</p>
-      <div style="margin-top: 1rem; text-align: left; background: rgba(10, 15, 26, 0.6); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.82rem; color: #9ca3af;">
-        <strong style="color: #f3f4f6;">💡 Quick Troubleshooting Checklist:</strong>
-        <ol style="margin-left: 1.25rem; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem;">
-          <li><strong>Check n8n Executions tab</strong>: Verify Webhook node is receiving <code>model: "${modelSelectEl.value}"</code>.</li>
-          <li><strong>Check Webhook Endpoint</strong>: Using <code>https://caravan-tidbit-flyover.ngrok-free.dev/webhook/enhance-promp</code>.</li>
-        </ol>
-      </div>
     </div>
   `;
 }
@@ -624,21 +676,20 @@ function generateDemoVariations(promptText, styleRef, subjectRef, style, model) 
   if (model === "seo") {
     const seoData = {
       niche: keyword,
-      seo_search_volume: "52,400 / mo (High Demand)",
-      seo_difficulty: "36/100 (Moderate - Low Competition in long-tail)",
-      estimated_rpm: "$24.50 - $48.00 per 1k views",
+      seo_search_volume: "52,400 / mo",
+      seo_difficulty: "36/100 (Moderate)",
+      estimated_rpm: "$24.50 - $48.00",
       estimated_cpc: "$2.40 - $6.20",
       est_monthly_revenue_potential: "$4,800 - $14,500",
       pros: [
-        "Extremely high advertiser demand with lucrative recurring software affiliate payouts.",
-        "Sustained 45%+ annual search growth driven by content creator boom.",
+        "High advertiser competition with premium recurring software affiliate payouts.",
+        "Sustained 45%+ annual search growth driven by creator economy.",
         "Rich long-tail keyword clusters for rapid Google & YouTube ranking."
       ],
       cons: [
-        "Requires active content updates to keep pace with new AI model releases.",
-        "Strong domain authority needed for broad seed keywords."
-      ],
-      summary: "High ROI niche opportunity. Ideal for niche sites, YouTube automation channels, and SaaS recommendation portals."
+        "Requires active content updates to keep pace with new AI releases.",
+        "High domain authority sites hold top positions for broad seed keywords."
+      ]
     };
 
     return [{
@@ -651,18 +702,17 @@ function generateDemoVariations(promptText, styleRef, subjectRef, style, model) 
   } else if (model === "trends") {
     const trendData = {
       niche: keyword,
-      usa_popularity: "🔥 96/100 (Top 5 Search Trend in US Digital Creator Sector)",
-      philippines_popularity: "📈 91/100 (Surging Interest in PH Freelance & BPO Sector)",
-      usa_insights: "US consumers prioritize automated workflow integrations, 4K rendering speed, and commercial licensing.",
-      philippines_insights: "PH users favor mobile-first tools, CapCut/TikTok integrations, GCash payments, and remote freelance client work.",
-      target_demographics: "Ages 18-35 | Video Editors, Content Creators & Remote Freelancers",
-      growth_trajectory: "🚀 +48% Year-over-Year Search Expansion",
+      usa_popularity: "🔥 96/100 (Top 5 Search Trend)",
+      philippines_popularity: "📈 91/100 (Surging Interest)",
+      usa_insights: "US users prioritize automated workflow integrations, 4K rendering speed, and commercial licensing.",
+      philippines_insights: "PH users favor CapCut/TikTok integrations, GCash payments, and remote freelance client work.",
+      target_demographics: "Ages 18-35 | Content Creators & Remote Freelancers",
+      growth_trajectory: "🚀 +48% YoY Expansion",
       multidisciplinary_stats: [
-        "76% Mobile search share in the Philippines vs 64% in the USA",
-        "Peak search engagement: 7:30 PM - 11:00 PM local time",
-        "Primary traffic discovery: Google Search (50%), TikTok (30%), YouTube Shorts (20%)"
-      ],
-      summary: "High potential in both regions. US market drives high software subscriptions, while PH market drives massive viral usage and service freelancing."
+        "76% Mobile search share in Philippines vs 64% in USA",
+        "Peak engagement: 7:30 PM - 11:00 PM local time",
+        "Primary traffic: Google Search (50%), TikTok (30%), YouTube Shorts (20%)"
+      ]
     };
 
     return [{
@@ -693,7 +743,7 @@ function generateDemoVariations(promptText, styleRef, subjectRef, style, model) 
   }
 }
 
-// UI State & Utilities
+// UI Utilities
 function setLoadingState(isLoading) {
   enhanceBtn.disabled = isLoading;
   const btnText = enhanceBtn.querySelector(".btn-text");
@@ -712,6 +762,11 @@ function showStatus(msg, type) {
   statusBarEl.className = `status-bar ${type}`;
   statusBarEl.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : type === 'success' ? 'fa-circle-check' : 'fa-circle-info'}"></i> <span>${escapeHtml(msg)}</span>`;
   statusBarEl.classList.remove("hidden");
+}
+
+function getWordCount(str) {
+  if (!str) return 0;
+  return str.trim().split(/\s+/).filter(Boolean).length;
 }
 
 function escapeHtml(str) {
@@ -751,7 +806,7 @@ function saveWebhookUrl() {
     localStorage.removeItem(STORAGE_POLLINATIONS_KEY);
   }
 
-  showStatus("Settings & Pollinations API Key saved successfully!", "success");
+  showStatus("Settings saved successfully!", "success");
   initWebhookState();
   closeModal();
 }
@@ -765,7 +820,7 @@ async function testWebhookConnection() {
   }
 
   testResultEl.className = "test-result";
-  testResultEl.textContent = "Testing connection to n8n webhook...";
+  testResultEl.textContent = "Testing connection...";
 
   try {
     const response = await fetch(url, {
@@ -782,11 +837,11 @@ async function testWebhookConnection() {
       testResultEl.textContent = "✓ Webhook connection successful! Status 200 OK.";
     } else {
       testResultEl.className = "test-result error";
-      testResultEl.textContent = `✗ Received status ${response.status} from server. Ensure your n8n workflow is ACTIVE.`;
+      testResultEl.textContent = `✗ Received status ${response.status} from server.`;
     }
   } catch (err) {
     testResultEl.className = "test-result error";
-    testResultEl.textContent = `✗ Connection failed: ${err.message}. Check CORS settings in n8n Webhook node.`;
+    testResultEl.textContent = `✗ Connection failed: ${err.message}.`;
   }
 }
 
@@ -826,13 +881,13 @@ function renderHistory() {
     div.className = "history-item";
     div.innerHTML = `
       <div class="history-item-raw">${escapeHtml(item.rawPrompt)}</div>
-      <div class="history-item-time"><i class="fa-regular fa-clock"></i> ${item.timestamp} (${item.variations.length} items)</div>
+      <div class="history-item-time"><i class="fa-regular fa-clock"></i> ${item.timestamp}</div>
     `;
     div.addEventListener("click", () => {
       if (nicheSearchInput) nicheSearchInput.value = item.rawPrompt;
       renderResults(item.variations);
       closeHistoryDrawer();
-      showStatus("Restored market intelligence item from history.", "info");
+      showStatus("Restored item from history.", "info");
     });
     historyListEl.appendChild(div);
   });
