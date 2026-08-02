@@ -1,7 +1,7 @@
 // LocalStorage Keys
 const STORAGE_WEBHOOK_KEY = "prompt_studio_webhook_url";
 const STORAGE_HISTORY_KEY = "prompt_studio_history";
-const DEFAULT_WEBHOOK_URL = "https://caravan-tidbit-flyover.ngrok-free.dev/webhook/enhanced-prompt";
+const DEFAULT_WEBHOOK_URL = "https://caravan-tidbit-flyover.ngrok-free.dev/webhook/enhance-promp";
 
 // DOM Elements
 const rawPromptEl = document.getElementById("raw-prompt");
@@ -10,7 +10,6 @@ const clearPromptBtn = document.getElementById("clear-prompt-btn");
 const enhanceBtn = document.getElementById("enhance-btn");
 const statusBarEl = document.getElementById("status-bar");
 const resultsGridEl = document.getElementById("results-grid");
-const presetChips = document.querySelectorAll(".chip");
 const activeModelTagEl = document.getElementById("active-model-tag");
 const modelSelectEl = document.getElementById("model-select");
 
@@ -86,15 +85,6 @@ function initEventListeners() {
     rawPromptEl.focus();
   });
 
-  // Preset Chips
-  presetChips.forEach((chip) => {
-    chip.addEventListener("click", () => {
-      rawPromptEl.value = chip.getAttribute("data-prompt");
-      updateCharCount();
-      rawPromptEl.focus();
-    });
-  });
-
   // Enhance Button
   enhanceBtn.addEventListener("click", enhancePrompt);
 
@@ -139,7 +129,7 @@ async function enhancePrompt() {
     let variations = [];
 
     if (webhookUrl) {
-      // Live n8n Webhook Request
+      // Live n8n Webhook Request matching website.json parameters
       const response = await fetch(webhookUrl, {
         method: "POST",
         headers: { 
@@ -147,9 +137,9 @@ async function enhancePrompt() {
           "ngrok-skip-browser-warning": "69420"
         },
         body: JSON.stringify({
-          raw_prompt: rawPrompt,
-          style: selectedStyle,
-          selected_model: selectedModel
+          prompt: rawPrompt,
+          model: selectedModel,
+          style: selectedStyle
         }),
       });
 
@@ -172,16 +162,21 @@ async function enhancePrompt() {
         throw new Error(`Invalid JSON returned from n8n: ${responseText.substring(0, 150)}`);
       }
 
-      variations = Array.isArray(data.variations) ? data.variations : (data.results || []);
-      
-      if (variations.length === 0 && data.prompt) {
+      // Handle website.json response structure ({ enhanced_prompt: "..." }) as well as variations array
+      if (data.enhanced_prompt) {
+        variations = [{ label: getModelLabel(selectedModel), prompt: data.enhanced_prompt }];
+      } else if (Array.isArray(data.variations)) {
+        variations = data.variations;
+      } else if (Array.isArray(data.results)) {
+        variations = data.results;
+      } else if (data.prompt) {
         variations = [{ label: getModelLabel(selectedModel), prompt: data.prompt }];
       }
     } else {
       // Demo / Fallback Mode
       await new Promise(resolve => setTimeout(resolve, 1000));
       variations = generateDemoVariations(rawPrompt, selectedStyle, selectedModel);
-      showStatus("Generated using Demo Mode. Connect your n8n Webhook URL for live OpenRouter responses.", "info");
+      showStatus("Generated using Demo Mode. Connect your n8n Webhook URL for live n8n AI responses.", "info");
     }
 
     if (variations.length === 0) {
@@ -204,16 +199,22 @@ async function enhancePrompt() {
 }
 
 function updateActiveModelTag(model) {
-  if (model === "gpt") {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-robot"></i> Model: OpenAI GPT-4o Mini`;
+  if (model === "chatgpt") {
+    activeModelTagEl.innerHTML = `<i class="fa-solid fa-robot"></i> Model: OpenAI ChatGPT / GPT-4`;
+  } else if (model === "claude") {
+    activeModelTagEl.innerHTML = `<i class="fa-solid fa-brain"></i> Model: Anthropic Claude AI`;
+  } else if (model === "grok") {
+    activeModelTagEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Model: xAI Grok AI`;
   } else {
-    activeModelTagEl.innerHTML = `<i class="fa-brands fa-google"></i> Model: Google Gemini 3.6 Flash`;
+    activeModelTagEl.innerHTML = `<i class="fa-brands fa-google"></i> Model: Google Gemini 3.5 Flash Lite`;
   }
 }
 
 function getModelLabel(modelKey) {
-  if (modelKey === "gpt") return "OpenAI GPT-4o Mini (free)";
-  return "Google Gemini 3.6 Flash";
+  if (modelKey === "chatgpt") return "OpenAI ChatGPT / GPT-4";
+  if (modelKey === "claude") return "Anthropic Claude AI";
+  if (modelKey === "grok") return "xAI Grok AI";
+  return "Google Gemini 3.5 Flash Lite";
 }
 
 // Render Results Grid
@@ -221,18 +222,26 @@ function renderResults(variations) {
   resultsGridEl.innerHTML = "";
 
   variations.forEach((v, index) => {
-    const label = v.label || (index === 0 ? "Google Gemini 3.6 Flash" : "OpenAI GPT-4o Mini (free)");
-    const text = v.prompt || v.text || "";
+    const label = v.label || getModelLabel(modelSelectEl.value);
+    const text = v.prompt || v.text || v.enhanced_prompt || "";
     const lowerLabel = label.toLowerCase();
     
     let cardClass = "card-gemini";
     let iconClass = "fa-google";
     let iconColor = "#4285f4";
 
-    if (lowerLabel.includes("gpt") || lowerLabel.includes("openai")) {
+    if (lowerLabel.includes("chatgpt") || lowerLabel.includes("gpt") || lowerLabel.includes("openai")) {
       cardClass = "card-gpt";
       iconClass = "fa-robot";
       iconColor = "#10a37f";
+    } else if (lowerLabel.includes("claude") || lowerLabel.includes("anthropic")) {
+      cardClass = "card-claude";
+      iconClass = "fa-brain";
+      iconColor = "#a855f7";
+    } else if (lowerLabel.includes("grok") || lowerLabel.includes("xai")) {
+      cardClass = "card-grok";
+      iconClass = "fa-bolt";
+      iconColor = "#06b6d4";
     }
 
     const card = document.createElement("div");
@@ -274,38 +283,33 @@ function renderResults(variations) {
 }
 
 function renderLoadingSkeletons(selectedModel) {
-  if (selectedModel === "gpt") {
-    resultsGridEl.innerHTML = `
-      <div class="result-card card-gpt">
-        <div class="result-header">
-          <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> OpenAI GPT-4o Mini generating...</div>
-        </div>
-        <div class="prompt-output" style="opacity: 0.6;">Generating system & persona instruction prompt variation...</div>
+  const label = getModelLabel(selectedModel);
+  let cardClass = "card-gemini";
+  if (selectedModel === "chatgpt") cardClass = "card-gpt";
+  if (selectedModel === "claude") cardClass = "card-claude";
+  if (selectedModel === "grok") cardClass = "card-grok";
+
+  resultsGridEl.innerHTML = `
+    <div class="result-card ${cardClass}">
+      <div class="result-header">
+        <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> ${escapeHtml(label)} generating...</div>
       </div>
-    `;
-  } else {
-    resultsGridEl.innerHTML = `
-      <div class="result-card card-gemini">
-        <div class="result-header">
-          <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Google Gemini 3.6 Flash generating...</div>
-        </div>
-        <div class="prompt-output" style="opacity: 0.6;">Generating structured & multimodal-ready prompt variation...</div>
-      </div>
-    `;
-  }
+      <div class="prompt-output" style="opacity: 0.6;">Generating structured prompt engineering instructions...</div>
+    </div>
+  `;
 }
 
 function renderErrorState(errorMsg) {
   resultsGridEl.innerHTML = `
     <div class="empty-state card">
       <div class="empty-icon" style="color: #f43f5e; background: rgba(244, 63, 94, 0.1);"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <h3>Failed to Retrieve Variations</h3>
+      <h3>Failed to Retrieve Enhanced Prompt</h3>
       <p>${escapeHtml(errorMsg)}</p>
       <div style="margin-top: 1rem; text-align: left; background: rgba(10, 15, 26, 0.6); padding: 1rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-size: 0.82rem; color: #9ca3af;">
         <strong style="color: #f3f4f6;">💡 Quick Troubleshooting Checklist:</strong>
         <ol style="margin-left: 1.25rem; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.35rem;">
-          <li><strong>Open n8n Executions tab</strong>: Check if an OpenRouter node turned red (e.g. OpenRouter API Key missing).</li>
-          <li><strong>Check Webhook Endpoint</strong>: Using <code>https://caravan-tidbit-flyover.ngrok-free.dev/webhook/enhanced-prompt</code>.</li>
+          <li><strong>Open n8n Executions tab</strong>: Check if an n8n node turned red or failed execution.</li>
+          <li><strong>Check Webhook Endpoint</strong>: Using <code>https://caravan-tidbit-flyover.ngrok-free.dev/webhook/enhance-promp</code>.</li>
           <li><strong>ngrok Warning Header</strong>: Added <code>ngrok-skip-browser-warning</code> header automatically.</li>
         </ol>
       </div>
@@ -313,19 +317,31 @@ function renderErrorState(errorMsg) {
   `;
 }
 
-// Fallback Demo Response Generator
+// Fallback Demo Response Generator for website.json models
 function generateDemoVariations(promptText, style, model) {
   const gemini = {
-    label: "Google Gemini 3.6 Flash",
-    prompt: `<context>\nYou are a domain expert assistant optimized for Google Gemini models.\n</context>\n\n<task>\nObjective: "${promptText}"\n</task>\n\n<instructions>\n1. Provide a comprehensive, structured response formatted in clean markdown.\n2. Address potential edge cases and explain step-by-step reasoning clearly.\n3. Calibrated style: ${style.toUpperCase()}.\n</instructions>`
+    label: "Google Gemini 3.5 Flash Lite",
+    prompt: `<role>\nYou are a domain expert assistant optimized for Google Gemini.\n</role>\n\n<task>\nObjective: "${promptText}"\n</task>\n\n<framework>\n1. Assign target persona & context.\n2. Provide structured response formatted in clean markdown.\n3. Calibrated style preset: ${style.toUpperCase()}.\n</framework>`
   };
 
-  const gpt = {
-    label: "OpenAI GPT-4o Mini (free)",
-    prompt: `[SYSTEM ROLE: Senior AI Prompt Specialist]\n\nTASK OVERVIEW:\n"${promptText}"\n\nEXECUTION DIRECTIVES:\n- Deliver an actionable, well-structured, production-ready solution.\n- Use XML/markdown blocks for distinct sections.\n- Style preset: ${style.toUpperCase()}.\n\nCONSTRAINTS:\n- Maintain high precision and eliminate fluff.`
+  const chatgpt = {
+    label: "OpenAI ChatGPT / GPT-4",
+    prompt: `[SYSTEM ROLE: Senior AI Prompt Specialist]\n\nTASK OVERVIEW:\n"${promptText}"\n\nEXECUTION DIRECTIVES:\n- Deliver an actionable, well-structured, production-ready solution.\n- Use markdown section headers.\n- Style preset: ${style.toUpperCase()}.\n\nCONSTRAINTS:\n- Maintain high precision and eliminate fluff.`
   };
 
-  if (model === "gpt") return [gpt];
+  const claude = {
+    label: "Anthropic Claude AI",
+    prompt: `<system>\nYou are an expert assistant tailored for Claude models.\n</system>\n\n<user_instructions>\nTask: "${promptText}"\nStyle: ${style.toUpperCase()}\n\nPlease address the request using clear XML delimiters, explicit step-by-step logic, and clean output framing.\n</user_instructions>`
+  };
+
+  const grok = {
+    label: "xAI Grok AI",
+    prompt: `[ROLE: High-Performance AI Specialist for Grok]\n\nPRIMARY DIRECTIVE: "${promptText}"\n\nSTYLE PRESET: ${style.toUpperCase()}\n\nProvide a direct, concise, and highly effective output with no unnecessary fluff.`
+  };
+
+  if (model === "chatgpt") return [chatgpt];
+  if (model === "claude") return [claude];
+  if (model === "grok") return [grok];
   return [gemini];
 }
 
@@ -403,7 +419,7 @@ async function testWebhookConnection() {
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "69420"
       },
-      body: JSON.stringify({ raw_prompt: "ping_test", style: "detailed", selected_model: "gemini" }),
+      body: JSON.stringify({ prompt: "ping_test", model: "gemini" }),
     });
 
     if (response.ok) {
@@ -473,3 +489,4 @@ function clearHistory() {
   localStorage.removeItem(STORAGE_HISTORY_KEY);
   renderHistory();
 }
+

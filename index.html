@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Prompt Studio | Powered by n8n & OpenRouter</title>
-  <meta name="description" content="Transform basic human prompts into high-performance AI prompts using top OpenRouter models (Google Gemini 3.6 Flash & OpenAI GPT-4o Mini) and n8n backend.">
+  <title>AI Prompt Studio | Powered by n8n Workflow</title>
+  <meta name="description" content="Transform basic human prompts into high-performance AI prompts using top AI models (Gemini, ChatGPT, Claude, Grok) and n8n backend.">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,14 +26,16 @@
         </div>
         <div class="brand-text">
           <h1>Prompt Studio <span class="badge-v">Pro</span></h1>
-          <p class="brand-sub">Google Gemini & OpenAI GPT Models</p>
+          <p class="brand-sub">Google Gemini, ChatGPT, Claude & Grok</p>
         </div>
       </div>
 
       <div class="header-actions">
         <div class="model-badges">
-          <span class="badge badge-gemini"><i class="fa-brands fa-google"></i> Gemini 3.6 Flash</span>
-          <span class="badge badge-gpt"><i class="fa-solid fa-robot"></i> GPT-4o Mini</span>
+          <span class="badge badge-gemini"><i class="fa-brands fa-google"></i> Gemini</span>
+          <span class="badge badge-gpt"><i class="fa-solid fa-robot"></i> ChatGPT</span>
+          <span class="badge badge-claude"><i class="fa-solid fa-brain"></i> Claude</span>
+          <span class="badge badge-grok"><i class="fa-solid fa-bolt"></i> Grok</span>
         </div>
 
         <button id="webhook-settings-btn" class="btn-icon" title="Configure n8n Webhook URL">
@@ -52,7 +54,7 @@
   <div id="webhook-banner" class="webhook-banner hidden">
     <div class="banner-content">
       <i class="fa-solid fa-circle-info"></i>
-      <span>Using <strong>Demo Engine Mode</strong>. Connect your <strong>n8n Webhook URL</strong> to enable live OpenRouter multi-model responses.</span>
+      <span>Using <strong>Demo Engine Mode</strong>. Connect your <strong>n8n Webhook URL</strong> to enable live OpenRouter / Gemini multi-model responses.</span>
       <button id="banner-config-btn" class="btn-banner">Connect n8n</button>
     </div>
   </div>
@@ -63,15 +65,6 @@
       <div class="card-header">
         <h2><i class="fa-solid fa-keyboard"></i> Raw Idea Input</h2>
         <span id="char-count" class="meta-count">0 / 2000 chars</span>
-      </div>
-
-      <!-- Quick Template Chips -->
-      <div class="preset-chips">
-        <span class="chips-label">Quick Ideas:</span>
-        <button class="chip" data-prompt="Refactor this JavaScript function to make it clean, modular, and handle errors asynchronously.">💻 Code Refactor</button>
-        <button class="chip" data-prompt="Write a high-converting landing page headline, hook, and key benefit bullet points for an AI SaaS app.">✍️ SaaS Copy</button>
-        <button class="chip" data-prompt="Photorealistic cinematic shot of a futuristic cyberpunk city with neon rainy streets, 8k resolution, photorealistic lighting.">🎨 Midjourney Art</button>
-        <button class="chip" data-prompt="Act as a senior data analyst and break down how to analyze customer churn using SQL and Python.">🤖 Expert Persona</button>
       </div>
 
       <div class="textarea-wrapper">
@@ -86,8 +79,10 @@
           <label for="model-select"><i class="fa-solid fa-robot"></i> Select AI Model:</label>
           <div class="select-wrapper">
             <select id="model-select" class="custom-select">
-              <option value="gemini" selected>🔵 Google: Gemini 3.6 Flash</option>
-              <option value="gpt">🟢 OpenAI: GPT-4o Mini (free)</option>
+              <option value="gemini" selected>🔵 Google: Gemini 3.5 Flash Lite</option>
+              <option value="chatgpt">🟢 OpenAI: ChatGPT / GPT-4</option>
+              <option value="claude">🟣 Anthropic: Claude AI</option>
+              <option value="grok">⚡ xAI: Grok AI</option>
             </select>
             <i class="fa-solid fa-chevron-down select-arrow"></i>
           </div>
@@ -129,7 +124,7 @@
     <section class="results-section">
       <div class="section-title-bar">
         <h2><i class="fa-solid fa-layer-group"></i> Enhanced Prompt Output</h2>
-        <span class="comparison-tag" id="active-model-tag"><i class="fa-brands fa-google"></i> Model: Google Gemini 3.6 Flash</span>
+        <span class="comparison-tag" id="active-model-tag"><i class="fa-brands fa-google"></i> Model: Google Gemini 3.5 Flash Lite</span>
       </div>
 
       <div id="results-grid" class="results-grid">
@@ -166,12 +161,12 @@
         <button id="close-modal-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <p class="modal-desc">Enter your <strong>n8n Production Webhook URL</strong>. Your web app will send raw prompts to this endpoint and display parallel AI outputs.</p>
+        <p class="modal-desc">Enter your <strong>n8n Production Webhook URL</strong>. Your web app will send raw prompts to this endpoint and display AI outputs.</p>
 
         <div class="form-group">
           <label for="webhook-url-input">n8n Production Webhook URL</label>
-          <input type="url" id="webhook-url-input" placeholder="https://your-n8n-domain.com/webhook/enhanced-prompt" autocomplete="off">
-          <small class="help-text"><i class="fa-solid fa-circle-question"></i> Tip: Use the Production Webhook URL from your <code>Website Input</code> node in n8n (not the test URL).</small>
+          <input type="url" id="webhook-url-input" placeholder="https://your-n8n-domain.com/webhook/enhance-promp" autocomplete="off">
+          <small class="help-text"><i class="fa-solid fa-circle-question"></i> Tip: Use the Production Webhook URL from your <code>Webhook (Website Input)</code> node in n8n (not the test URL).</small>
         </div>
 
         <div id="webhook-test-result" class="test-result"></div>
@@ -185,10 +180,10 @@
 
   <footer class="app-footer">
     <div class="footer-container">
-      <p>© 2026 AI Prompt Studio | Open Source GitHub Web App & n8n Engine</p>
+      <p>© 2026 AI Prompt Studio | Open Source Web App & n8n Engine</p>
       <div class="footer-links">
         <a href="https://github.com/Deanes05/enhanced-prompt" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> GitHub Repo</a>
-        <a href="prompt-enhancer-workflow.json" download><i class="fa-solid fa-download"></i> Download n8n Workflow JSON</a>
+        <a href="website.json" download><i class="fa-solid fa-download"></i> Download n8n Workflow JSON</a>
       </div>
     </div>
   </footer>
