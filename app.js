@@ -204,19 +204,16 @@ async function enhancePrompt() {
 }
 
 function updateActiveModelTag(model) {
-  if (model === "gemini") {
-    activeModelTagEl.innerHTML = `<i class="fa-brands fa-google"></i> Model: Google Gemini 2.0 Flash`;
-  } else if (model === "gpt") {
+  if (model === "gpt") {
     activeModelTagEl.innerHTML = `<i class="fa-solid fa-robot"></i> Model: OpenAI GPT-4o Mini`;
   } else {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-layer-group"></i> Both Free Models (Comparison)`;
+    activeModelTagEl.innerHTML = `<i class="fa-brands fa-google"></i> Model: Google Gemini 3.6 Flash`;
   }
 }
 
 function getModelLabel(modelKey) {
-  if (modelKey === "gemini") return "Google Gemini 2.0 Flash (free)";
   if (modelKey === "gpt") return "OpenAI GPT-4o Mini (free)";
-  return "Top Free Models Comparison";
+  return "Google Gemini 3.6 Flash";
 }
 
 // Render Results Grid
@@ -224,7 +221,7 @@ function renderResults(variations) {
   resultsGridEl.innerHTML = "";
 
   variations.forEach((v, index) => {
-    const label = v.label || (index === 0 ? "Google Gemini 2.0 Flash (free)" : "OpenAI GPT-4o Mini (free)");
+    const label = v.label || (index === 0 ? "Google Gemini 3.6 Flash" : "OpenAI GPT-4o Mini (free)");
     const text = v.prompt || v.text || "";
     const lowerLabel = label.toLowerCase();
     
@@ -277,16 +274,7 @@ function renderResults(variations) {
 }
 
 function renderLoadingSkeletons(selectedModel) {
-  if (selectedModel === "gemini") {
-    resultsGridEl.innerHTML = `
-      <div class="result-card card-gemini">
-        <div class="result-header">
-          <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Google Gemini 2.0 Flash generating...</div>
-        </div>
-        <div class="prompt-output" style="opacity: 0.6;">Generating structured & multimodal-ready prompt variation...</div>
-      </div>
-    `;
-  } else if (selectedModel === "gpt") {
+  if (selectedModel === "gpt") {
     resultsGridEl.innerHTML = `
       <div class="result-card card-gpt">
         <div class="result-header">
@@ -298,12 +286,10 @@ function renderLoadingSkeletons(selectedModel) {
   } else {
     resultsGridEl.innerHTML = `
       <div class="result-card card-gemini">
-        <div class="result-header"><div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Gemini 2.0 Flash...</div></div>
-        <div class="prompt-output" style="opacity: 0.6;">Generating Gemini prompt...</div>
-      </div>
-      <div class="result-card card-gpt">
-        <div class="result-header"><div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> GPT-4o Mini...</div></div>
-        <div class="prompt-output" style="opacity: 0.6;">Generating GPT prompt...</div>
+        <div class="result-header">
+          <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Google Gemini 3.6 Flash generating...</div>
+        </div>
+        <div class="prompt-output" style="opacity: 0.6;">Generating structured & multimodal-ready prompt variation...</div>
       </div>
     `;
   }
@@ -330,7 +316,7 @@ function renderErrorState(errorMsg) {
 // Fallback Demo Response Generator
 function generateDemoVariations(promptText, style, model) {
   const gemini = {
-    label: "Google Gemini 2.0 Flash (free)",
+    label: "Google Gemini 3.6 Flash",
     prompt: `<context>\nYou are a domain expert assistant optimized for Google Gemini models.\n</context>\n\n<task>\nObjective: "${promptText}"\n</task>\n\n<instructions>\n1. Provide a comprehensive, structured response formatted in clean markdown.\n2. Address potential edge cases and explain step-by-step reasoning clearly.\n3. Calibrated style: ${style.toUpperCase()}.\n</instructions>`
   };
 
@@ -339,9 +325,8 @@ function generateDemoVariations(promptText, style, model) {
     prompt: `[SYSTEM ROLE: Senior AI Prompt Specialist]\n\nTASK OVERVIEW:\n"${promptText}"\n\nEXECUTION DIRECTIVES:\n- Deliver an actionable, well-structured, production-ready solution.\n- Use XML/markdown blocks for distinct sections.\n- Style preset: ${style.toUpperCase()}.\n\nCONSTRAINTS:\n- Maintain high precision and eliminate fluff.`
   };
 
-  if (model === "gemini") return [gemini];
   if (model === "gpt") return [gpt];
-  return [gemini, gpt];
+  return [gemini];
 }
 
 // UI State & Utilities

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Prompt Studio | Powered by n8n & OpenRouter</title>
-  <meta name="description" content="Transform basic human prompts into high-performance AI prompts using top free OpenRouter models (Google Gemini 2.0 Flash & OpenAI GPT-4o Mini) and n8n backend.">
+  <meta name="description" content="Transform basic human prompts into high-performance AI prompts using top OpenRouter models (Google Gemini 3.6 Flash & OpenAI GPT-4o Mini) and n8n backend.">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,13 +26,13 @@
         </div>
         <div class="brand-text">
           <h1>Prompt Studio <span class="badge-v">Pro</span></h1>
-          <p class="brand-sub">Google Gemini & OpenAI GPT Free Models</p>
+          <p class="brand-sub">Google Gemini & OpenAI GPT Models</p>
         </div>
       </div>
 
       <div class="header-actions">
         <div class="model-badges">
-          <span class="badge badge-gemini"><i class="fa-brands fa-google"></i> Gemini 2.0 Flash</span>
+          <span class="badge badge-gemini"><i class="fa-brands fa-google"></i> Gemini 3.6 Flash</span>
           <span class="badge badge-gpt"><i class="fa-solid fa-robot"></i> GPT-4o Mini</span>
         </div>
 
@@ -86,9 +86,8 @@
           <label for="model-select"><i class="fa-solid fa-robot"></i> Select AI Model:</label>
           <div class="select-wrapper">
             <select id="model-select" class="custom-select">
-              <option value="gemini" selected>🔵 Google: Gemini 2.0 Flash (free)</option>
+              <option value="gemini" selected>🔵 Google: Gemini 3.6 Flash</option>
               <option value="gpt">🟢 OpenAI: GPT-4o Mini (free)</option>
-              <option value="all">✨ Compare Both Free Models Side-by-Side</option>
             </select>
             <i class="fa-solid fa-chevron-down select-arrow"></i>
           </div>
@@ -130,7 +129,7 @@
     <section class="results-section">
       <div class="section-title-bar">
         <h2><i class="fa-solid fa-layer-group"></i> Enhanced Prompt Output</h2>
-        <span class="comparison-tag" id="active-model-tag"><i class="fa-brands fa-google"></i> Model: Google Gemini 2.0 Flash</span>
+        <span class="comparison-tag" id="active-model-tag"><i class="fa-brands fa-google"></i> Model: Google Gemini 3.6 Flash</span>
       </div>
 
       <div id="results-grid" class="results-grid">
