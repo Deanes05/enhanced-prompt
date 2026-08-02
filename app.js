@@ -121,7 +121,7 @@ function updateCharCount() {
 async function enhancePrompt() {
   const rawPrompt = rawPromptEl.value.trim();
   const selectedStyle = document.querySelector('input[name="prompt-style"]:checked')?.value || "detailed";
-  const selectedModel = modelSelectEl.value || "nemotron";
+  const selectedModel = modelSelectEl.value || "gemini";
 
   if (!rawPrompt) {
     showStatus("Please enter a raw prompt idea first.", "error");
@@ -204,22 +204,19 @@ async function enhancePrompt() {
 }
 
 function updateActiveModelTag(model) {
-  if (model === "nemotron") {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-microchip"></i> Model: NVIDIA Nemotron 3 Ultra`;
-  } else if (model === "ling") {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-bolt"></i> Model: Ling 3.0 Flash`;
-  } else if (model === "laguna") {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-code"></i> Model: Poolside Laguna S 2.1`;
+  if (model === "gemini") {
+    activeModelTagEl.innerHTML = `<i class="fa-brands fa-google"></i> Model: Google Gemini 2.0 Flash`;
+  } else if (model === "gpt") {
+    activeModelTagEl.innerHTML = `<i class="fa-solid fa-robot"></i> Model: OpenAI GPT-4o Mini`;
   } else {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-layer-group"></i> All 3 Free Models (Comparison)`;
+    activeModelTagEl.innerHTML = `<i class="fa-solid fa-layer-group"></i> Both Free Models (Comparison)`;
   }
 }
 
 function getModelLabel(modelKey) {
-  if (modelKey === "nemotron") return "NVIDIA Nemotron 3 Ultra (free)";
-  if (modelKey === "ling") return "Ling 3.0 Flash (free)";
-  if (modelKey === "laguna") return "Poolside Laguna S 2.1 (free)";
-  return "Top 3 Free Models Comparison";
+  if (modelKey === "gemini") return "Google Gemini 2.0 Flash (free)";
+  if (modelKey === "gpt") return "OpenAI GPT-4o Mini (free)";
+  return "Top Free Models Comparison";
 }
 
 // Render Results Grid
@@ -227,22 +224,18 @@ function renderResults(variations) {
   resultsGridEl.innerHTML = "";
 
   variations.forEach((v, index) => {
-    const label = v.label || (index === 0 ? "NVIDIA Nemotron 3 Ultra" : index === 1 ? "Ling 3.0 Flash" : "Poolside Laguna S 2.1");
+    const label = v.label || (index === 0 ? "Google Gemini 2.0 Flash (free)" : "OpenAI GPT-4o Mini (free)");
     const text = v.prompt || v.text || "";
     const lowerLabel = label.toLowerCase();
     
-    let cardClass = "card-nemotron";
-    let iconClass = "fa-microchip";
-    let iconColor = "#10b981";
+    let cardClass = "card-gemini";
+    let iconClass = "fa-google";
+    let iconColor = "#4285f4";
 
-    if (lowerLabel.includes("ling")) {
-      cardClass = "card-ling";
-      iconClass = "fa-bolt";
-      iconColor = "#06b6d4";
-    } else if (lowerLabel.includes("laguna")) {
-      cardClass = "card-laguna";
-      iconClass = "fa-code";
-      iconColor = "#6366f1";
+    if (lowerLabel.includes("gpt") || lowerLabel.includes("openai")) {
+      cardClass = "card-gpt";
+      iconClass = "fa-robot";
+      iconColor = "#10a37f";
     }
 
     const card = document.createElement("div");
@@ -250,7 +243,7 @@ function renderResults(variations) {
     card.innerHTML = `
       <div class="result-header">
         <div class="model-name">
-          <i class="fa-solid ${iconClass}" style="color: ${iconColor}"></i>
+          <i class="${iconClass === 'fa-google' ? 'fa-brands' : 'fa-solid'} ${iconClass}" style="color: ${iconColor}"></i>
           <span>${escapeHtml(label)}</span>
         </div>
         <div class="result-actions">
@@ -284,46 +277,33 @@ function renderResults(variations) {
 }
 
 function renderLoadingSkeletons(selectedModel) {
-  if (selectedModel === "nemotron") {
+  if (selectedModel === "gemini") {
     resultsGridEl.innerHTML = `
-      <div class="result-card card-nemotron">
+      <div class="result-card card-gemini">
         <div class="result-header">
-          <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> NVIDIA Nemotron 3 Ultra generating...</div>
+          <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Google Gemini 2.0 Flash generating...</div>
         </div>
-        <div class="prompt-output" style="opacity: 0.6;">Generating agentic & reasoning prompt variation...</div>
+        <div class="prompt-output" style="opacity: 0.6;">Generating structured & multimodal-ready prompt variation...</div>
       </div>
     `;
-  } else if (selectedModel === "ling") {
+  } else if (selectedModel === "gpt") {
     resultsGridEl.innerHTML = `
-      <div class="result-card card-ling">
+      <div class="result-card card-gpt">
         <div class="result-header">
-          <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Ling 3.0 Flash generating...</div>
+          <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> OpenAI GPT-4o Mini generating...</div>
         </div>
-        <div class="prompt-output" style="opacity: 0.6;">Generating fast & token-efficient prompt variation...</div>
-      </div>
-    `;
-  } else if (selectedModel === "laguna") {
-    resultsGridEl.innerHTML = `
-      <div class="result-card card-laguna">
-        <div class="result-header">
-          <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Poolside Laguna S 2.1 generating...</div>
-        </div>
-        <div class="prompt-output" style="opacity: 0.6;">Generating coding & agentic engineering prompt variation...</div>
+        <div class="prompt-output" style="opacity: 0.6;">Generating system & persona instruction prompt variation...</div>
       </div>
     `;
   } else {
     resultsGridEl.innerHTML = `
-      <div class="result-card card-nemotron">
-        <div class="result-header"><div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Nemotron 3 Ultra...</div></div>
-        <div class="prompt-output" style="opacity: 0.6;">Generating reasoning prompt...</div>
+      <div class="result-card card-gemini">
+        <div class="result-header"><div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Gemini 2.0 Flash...</div></div>
+        <div class="prompt-output" style="opacity: 0.6;">Generating Gemini prompt...</div>
       </div>
-      <div class="result-card card-ling">
-        <div class="result-header"><div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Ling 3.0 Flash...</div></div>
-        <div class="prompt-output" style="opacity: 0.6;">Generating fast prompt...</div>
-      </div>
-      <div class="result-card card-laguna">
-        <div class="result-header"><div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Laguna S 2.1...</div></div>
-        <div class="prompt-output" style="opacity: 0.6;">Generating coding prompt...</div>
+      <div class="result-card card-gpt">
+        <div class="result-header"><div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> GPT-4o Mini...</div></div>
+        <div class="prompt-output" style="opacity: 0.6;">Generating GPT prompt...</div>
       </div>
     `;
   }
@@ -349,25 +329,19 @@ function renderErrorState(errorMsg) {
 
 // Fallback Demo Response Generator
 function generateDemoVariations(promptText, style, model) {
-  const nemotron = {
-    label: "NVIDIA Nemotron 3 Ultra (Agentic & Orchestration)",
-    prompt: `<role>\nYou are an open frontier-reasoning and orchestration specialist AI.\n</role>\n\n<task>\nAnalyze, scaffold, and solve: "${promptText}"\n</task>\n\n<directives>\n1. Break down the task into systematic orchestration steps.\n2. Include edge-case guardrails and output verification criteria.\n</directives>`
+  const gemini = {
+    label: "Google Gemini 2.0 Flash (free)",
+    prompt: `<context>\nYou are a domain expert assistant optimized for Google Gemini models.\n</context>\n\n<task>\nObjective: "${promptText}"\n</task>\n\n<instructions>\n1. Provide a comprehensive, structured response formatted in clean markdown.\n2. Address potential edge cases and explain step-by-step reasoning clearly.\n3. Calibrated style: ${style.toUpperCase()}.\n</instructions>`
   };
 
-  const ling = {
-    label: "Ling 3.0 Flash (Fast & Efficient)",
-    prompt: `[System Instruction: High-performance token-efficient model.]\n\nTask: ${promptText}\n\nRequirements:\n- Deliver an immediate, ultra-concise, structured solution.\n- Focus on core actionable steps.\n\nStyle requested: ${style.toUpperCase()}.\nOutput format: Clean Markdown.`
+  const gpt = {
+    label: "OpenAI GPT-4o Mini (free)",
+    prompt: `[SYSTEM ROLE: Senior AI Prompt Specialist]\n\nTASK OVERVIEW:\n"${promptText}"\n\nEXECUTION DIRECTIVES:\n- Deliver an actionable, well-structured, production-ready solution.\n- Use XML/markdown blocks for distinct sections.\n- Style preset: ${style.toUpperCase()}.\n\nCONSTRAINTS:\n- Maintain high precision and eliminate fluff.`
   };
 
-  const laguna = {
-    label: "Poolside Laguna S 2.1 (Coding & Engineering)",
-    prompt: `<expert_role>\nYou are a senior principal software engineer and agentic coding assistant.\n</expert_role>\n\n<objective>\nArchitect and implement: "${promptText}"\n</objective>\n\n<engineering_standards>\n- Write clean, modular, production-ready code with complete type annotations.\n- Include unit test cases and error boundary handling.\n</engineering_standards>`
-  };
-
-  if (model === "nemotron") return [nemotron];
-  if (model === "ling") return [ling];
-  if (model === "laguna") return [laguna];
-  return [nemotron, ling, laguna];
+  if (model === "gemini") return [gemini];
+  if (model === "gpt") return [gpt];
+  return [gemini, gpt];
 }
 
 // UI State & Utilities
@@ -444,7 +418,7 @@ async function testWebhookConnection() {
         "Content-Type": "application/json",
         "ngrok-skip-browser-warning": "69420"
       },
-      body: JSON.stringify({ raw_prompt: "ping_test", style: "detailed", selected_model: "nemotron" }),
+      body: JSON.stringify({ raw_prompt: "ping_test", style: "detailed", selected_model: "gemini" }),
     });
 
     if (response.ok) {

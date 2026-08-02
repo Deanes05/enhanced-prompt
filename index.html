@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Prompt Studio | Powered by n8n & OpenRouter</title>
-  <meta name="description" content="Transform basic human prompts into high-performance AI prompts using top free OpenRouter models (Nemotron 3 Ultra, Ling 3.0 Flash, Laguna S 2.1) and n8n backend.">
+  <meta name="description" content="Transform basic human prompts into high-performance AI prompts using top free OpenRouter models (Google Gemini 2.0 Flash & OpenAI GPT-4o Mini) and n8n backend.">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,15 +26,14 @@
         </div>
         <div class="brand-text">
           <h1>Prompt Studio <span class="badge-v">Pro</span></h1>
-          <p class="brand-sub">Top OpenRouter Free Models Architecture</p>
+          <p class="brand-sub">Google Gemini & OpenAI GPT Free Models</p>
         </div>
       </div>
 
       <div class="header-actions">
         <div class="model-badges">
-          <span class="badge badge-nemotron"><i class="fa-solid fa-microchip"></i> Nemotron 3</span>
-          <span class="badge badge-ling"><i class="fa-solid fa-bolt"></i> Ling 3.0</span>
-          <span class="badge badge-laguna"><i class="fa-solid fa-code"></i> Laguna S 2.1</span>
+          <span class="badge badge-gemini"><i class="fa-brands fa-google"></i> Gemini 2.0 Flash</span>
+          <span class="badge badge-gpt"><i class="fa-solid fa-robot"></i> GPT-4o Mini</span>
         </div>
 
         <button id="webhook-settings-btn" class="btn-icon" title="Configure n8n Webhook URL">
@@ -87,10 +86,9 @@
           <label for="model-select"><i class="fa-solid fa-robot"></i> Select AI Model:</label>
           <div class="select-wrapper">
             <select id="model-select" class="custom-select">
-              <option value="nemotron" selected>🟢 NVIDIA: Nemotron 3 Ultra (free)</option>
-              <option value="ling">⚡ Ling-3.0-flash (free)</option>
-              <option value="laguna">💻 Poolside: Laguna S 2.1 (free)</option>
-              <option value="all">✨ Compare All 3 Free Models Side-by-Side</option>
+              <option value="gemini" selected>🔵 Google: Gemini 2.0 Flash (free)</option>
+              <option value="gpt">🟢 OpenAI: GPT-4o Mini (free)</option>
+              <option value="all">✨ Compare Both Free Models Side-by-Side</option>
             </select>
             <i class="fa-solid fa-chevron-down select-arrow"></i>
           </div>
@@ -132,7 +130,7 @@
     <section class="results-section">
       <div class="section-title-bar">
         <h2><i class="fa-solid fa-layer-group"></i> Enhanced Prompt Output</h2>
-        <span class="comparison-tag" id="active-model-tag"><i class="fa-solid fa-microchip"></i> Model: NVIDIA Nemotron 3 Ultra</span>
+        <span class="comparison-tag" id="active-model-tag"><i class="fa-brands fa-google"></i> Model: Google Gemini 2.0 Flash</span>
       </div>
 
       <div id="results-grid" class="results-grid">
