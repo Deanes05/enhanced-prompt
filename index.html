@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Prompt Studio | Powered by n8n Workflow</title>
-  <meta name="description" content="Transform basic human prompts into high-performance AI prompts using top AI models (Gemini, ChatGPT, Claude, Grok) and n8n backend.">
-  
+  <meta name="description"
+    content="Transform basic human prompts into high-performance AI prompts using top AI models (Gemini, ChatGPT, Claude, Grok) and n8n backend.">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <!-- Header / Navigation Bar -->
   <header class="app-header">
@@ -54,35 +59,110 @@
   <div id="webhook-banner" class="webhook-banner hidden">
     <div class="banner-content">
       <i class="fa-solid fa-circle-info"></i>
-      <span>Using <strong>Demo Engine Mode</strong>. Connect your <strong>n8n Webhook URL</strong> to enable live n8n AI multi-model responses.</span>
+      <span>Using <strong>Demo Engine Mode</strong>. Connect your <strong>n8n Webhook URL</strong> to enable live n8n AI
+        multi-model responses.</span>
       <button id="banner-config-btn" class="btn-banner">Connect n8n</button>
     </div>
   </div>
 
-  <main class="main-layout">
+    <!-- Mode Switcher Tabs -->
+    <div class="mode-tabs">
+      <button id="tab-niche-search" class="mode-tab active">
+        <i class="fa-solid fa-magnifying-glass-chart"></i> Niche Search & Market Intelligence Engine
+      </button>
+      <button id="tab-style-transfer" class="mode-tab">
+        <i class="fa-solid fa-palette"></i> Style Transfer & Image Fusion (Image 1 + Image 2 ➔ Image 3)
+      </button>
+      <button id="tab-text-prompt" class="mode-tab">
+        <i class="fa-solid fa-pen-to-square"></i> Prompt Enhancer
+      </button>
+    </div>
+
     <!-- Prompt Input Panel -->
     <section class="input-card card">
-      <div class="card-header">
-        <h2><i class="fa-solid fa-keyboard"></i> Raw Idea Input</h2>
-        <span id="char-count" class="meta-count">0 / 2000 chars</span>
+      <!-- Niche Search Engine Inputs (Default active mode) -->
+      <div id="niche-search-container" class="niche-search-box">
+        <div class="search-input-header">
+          <span class="ref-badge badge-search"><i class="fa-solid fa-chart-line"></i> Market Niche & Keyword Query</span>
+          <span class="ref-sub">High SEO difficulty, estimated ad revenue (RPM/CPC), Pros & Cons, and USA vs PH popularity analytics</span>
+        </div>
+        <div class="search-bar-wrapper">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="niche-search-input" class="niche-input"
+            placeholder="Enter any niche or keyword idea (e.g., 'AI Video Editing Tools', 'Pet Tech Accessories', 'Personal Finance Apps')"
+            autocomplete="off">
+        </div>
+        
+        <!-- Quick Niche Category Chips -->
+        <div class="style-presets">
+          <span class="preset-title"><i class="fa-solid fa-fire"></i> Trending Niche Categories:</span>
+          <button type="button" class="niche-chip" data-niche="AI Video Generator & Editing Software">🤖 AI Tools & Software</button>
+          <button type="button" class="niche-chip" data-niche="Smart Home Gadgets & Pet Tech Accessories">🐕 Pet Tech & Smart Home</button>
+          <button type="button" class="niche-chip" data-niche="Gen-Z Personal Finance & Crypto Investing Apps">💰 Personal Finance & Investing</button>
+          <button type="button" class="niche-chip" data-niche="Ergonomic Gaming Chairs & Streaming Gear">🎮 Gaming Equipment</button>
+          <button type="button" class="niche-chip" data-niche="Organic Skincare & Holistic Wellness Products">🌿 Organic Skincare & Wellness</button>
+        </div>
       </div>
 
-      <div class="textarea-wrapper">
-        <textarea id="raw-prompt" placeholder="Type your simple idea here... (e.g., 'Write a blog post about video editing tips for beginners')" maxlength="2000"></textarea>
+      <!-- Style Transfer Mode Inputs (Hidden in Niche Search mode) -->
+      <div id="style-transfer-container" class="transfer-inputs-grid hidden">
+        <!-- Image 1: Style & Ambience -->
+        <div class="ref-input-box card-inner">
+          <div class="ref-header">
+            <span class="ref-badge badge-style"><i class="fa-solid fa-paintbrush"></i> Image 1: Style Reference</span>
+            <span class="ref-sub">Aesthetic, Ambience & Lighting</span>
+          </div>
+          <textarea id="style-ref-input" class="ref-textarea"
+            placeholder="Describe Image 1 style or paste URL (e.g., '3D Pixar cartoony style, vibrant pastel lighting, soft volumetric shadows, 8k render')"
+            rows="3"></textarea>
+          
+          <!-- Quick Style Presets -->
+          <div class="style-presets">
+            <span class="preset-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Quick Presets:</span>
+            <button type="button" class="preset-chip" data-preset="3D Pixar Cartoony style, vibrant saturated colors, soft studio lighting, cute expression">🎨 3D Cartoony</button>
+            <button type="button" class="preset-chip" data-preset="Cyberpunk neon lighting, glowing rain reflections, futuristic dark aesthetic, high contrast">⚡ Cyberpunk Neon</button>
+            <button type="button" class="preset-chip" data-preset="Studio Ghibli hand-drawn anime aesthetic, warm sunlight, scenic painted background">🌸 Ghibli Anime</button>
+            <button type="button" class="preset-chip" data-preset="Photorealistic 8k cinematic studio portrait, 85mm lens bokeh, soft directional light">📸 Studio Portrait</button>
+            <button type="button" class="preset-chip" data-preset="Classical oil painting, heavy brush strokes, Rembrandt dramatic chiaroscuro lighting">🖼️ Oil Painting</button>
+          </div>
+        </div>
+
+        <!-- Fusion Symbol -->
+        <div class="fusion-symbol">
+          <div class="plus-circle"><i class="fa-solid fa-plus"></i></div>
+        </div>
+
+        <!-- Image 2: Subject Entity -->
+        <div class="ref-input-box card-inner">
+          <div class="ref-header">
+            <span class="ref-badge badge-subject"><i class="fa-solid fa-user-astronaut"></i> Image 2: Subject Reference</span>
+            <span class="ref-sub">Character, Object or Scene</span>
+          </div>
+          <textarea id="subject-ref-input" class="ref-textarea"
+            placeholder="Describe Image 2 subject or paste URL (e.g., 'A playful golden retriever wearing space astronaut gear floating in orbit')"
+            rows="3"></textarea>
+        </div>
+      </div>
+
+      <!-- Standard Single Text Prompt (Hidden in Niche Search & Style Transfer mode) -->
+      <div id="single-prompt-container" class="textarea-wrapper hidden">
+        <textarea id="raw-prompt"
+          placeholder="Type your simple idea here... (e.g., 'Write a blog post about video editing tips for beginners')"
+          maxlength="2000"></textarea>
         <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <!-- Enhancement Options -->
+      <!-- Enhancement & Generation Options -->
       <div class="options-bar">
         <!-- Model Dropdown Selector -->
         <div class="option-group">
-          <label for="model-select"><i class="fa-solid fa-robot"></i> Select AI Model:</label>
+          <label for="model-select"><i class="fa-solid fa-robot"></i> Select Intelligence Engine:</label>
           <div class="select-wrapper">
             <select id="model-select" class="custom-select">
-              <option value="gemini" selected>🔵 Google: Gemini 3.5 Flash Lite</option>
-              <option value="chatgpt">🟢 OpenAI: ChatGPT / GPT-4</option>
-              <option value="claude">🟣 Anthropic: Claude AI</option>
-              <option value="grok">⚡ xAI: Grok AI</option>
+              <option value="seo" selected>📈 High-SEO & Ad Revenue Intelligence Engine</option>
+              <option value="trends">🌏 USA vs Philippines Regional Trend Analytics</option>
+              <option value="image">🎨 Pollinations Image 3 Generator (Style Transfer)</option>
+              <option value="gemini">🔵 Google: Gemini Prompt Enhancer</option>
             </select>
             <i class="fa-solid fa-chevron-down select-arrow"></i>
           </div>
@@ -111,9 +191,9 @@
           </div>
         </div>
 
-        <button id="enhance-btn" class="btn-primary">
-          <span class="btn-text"><i class="fa-solid fa-sparkles"></i> Enhance Prompt</span>
-          <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> Processing...</span>
+        <button id="enhance-btn" class="btn-primary btn-generate">
+          <span class="btn-text"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Image 3 & Prompt</span>
+          <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> Synthesizing Image 3...</span>
         </button>
       </div>
 
@@ -123,16 +203,17 @@
     <!-- Results Display Section -->
     <section class="results-section">
       <div class="section-title-bar">
-        <h2><i class="fa-solid fa-layer-group"></i> Enhanced Prompt Output</h2>
-        <span class="comparison-tag" id="active-model-tag"><i class="fa-brands fa-google"></i> Model: Google Gemini 3.5 Flash Lite</span>
+        <h2><i class="fa-solid fa-layer-group"></i> Output & Generated Result</h2>
+        <span class="comparison-tag" id="active-model-tag"><i class="fa-brands fa-google"></i> Model: Google Gemini 3.5
+          Flash Lite</span>
       </div>
 
       <div id="results-grid" class="results-grid">
         <!-- Initial Placeholder State -->
         <div class="empty-state card">
           <div class="empty-icon"><i class="fa-solid fa-wand-magic"></i></div>
-          <h3>Ready to Enhance Your Prompt</h3>
-          <p>Select your preferred AI model from the dropdown above, type your raw idea, and click <strong>Enhance Prompt</strong>. Your n8n backend will process it through that model.</p>
+          <h3>Ready for Style Transfer & Image Generation</h3>
+          <p>Provide your <strong>Image 1 Style Reference</strong> and <strong>Image 2 Subject Reference</strong> above, then click <strong>Generate Image 3 & Prompt</strong> to fuse them together!</p>
         </div>
       </div>
     </section>
@@ -148,7 +229,8 @@
       <p class="history-empty">No history saved yet.</p>
     </div>
     <div class="drawer-footer">
-      <button id="clear-history-btn" class="btn-secondary btn-full"><i class="fa-solid fa-trash-can"></i> Clear History</button>
+      <button id="clear-history-btn" class="btn-secondary btn-full"><i class="fa-solid fa-trash-can"></i> Clear
+        History</button>
     </div>
   </aside>
   <div id="drawer-overlay" class="drawer-overlay"></div>
@@ -161,12 +243,21 @@
         <button id="close-modal-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <p class="modal-desc">Enter your <strong>n8n Production Webhook URL</strong>. Your web app will send raw prompts to this endpoint and display AI outputs.</p>
+        <p class="modal-desc">Enter your <strong>n8n Production Webhook URL</strong>. Your web app will send raw prompts
+          to this endpoint and display AI outputs.</p>
 
         <div class="form-group">
           <label for="webhook-url-input">n8n Production Webhook URL</label>
-          <input type="url" id="webhook-url-input" placeholder="https://your-n8n-domain.com/webhook/enhance-promp" autocomplete="off">
-          <small class="help-text"><i class="fa-solid fa-circle-question"></i> Tip: Use the Production Webhook URL from your <code>Webhook (Website Input)</code> node in n8n (not the test URL).</small>
+          <input type="url" id="webhook-url-input" placeholder="https://your-n8n-domain.com/webhook/enhance-promp"
+            autocomplete="off">
+          <small class="help-text"><i class="fa-solid fa-circle-question"></i> Tip: Use the Production Webhook URL from
+            your <code>Webhook (Website Input)</code> node in n8n.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="pollinations-key-input"><i class="fa-solid fa-key"></i> Pollinations API Key (Optional)</label>
+          <input type="text" id="pollinations-key-input" placeholder="pk_... or sk_..." autocomplete="off">
+          <small class="help-text"><i class="fa-solid fa-circle-info"></i> Get your API key from <a href="https://enter.pollinations.ai" target="_blank" rel="noopener" style="color: var(--accent-primary);">enter.pollinations.ai</a> for higher rate limits.</small>
         </div>
 
         <div id="webhook-test-result" class="test-result"></div>
@@ -182,7 +273,8 @@
     <div class="footer-container">
       <p>© 2026 AI Prompt Studio | Open Source Web App & n8n Engine</p>
       <div class="footer-links">
-        <a href="https://github.com/Deanes05/enhanced-prompt" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> GitHub Repo</a>
+        <a href="https://github.com/Deanes05/enhanced-prompt" target="_blank" rel="noopener"><i
+            class="fa-brands fa-github"></i> GitHub Repo</a>
         <a href="website.json" download><i class="fa-solid fa-download"></i> Download n8n Workflow JSON</a>
       </div>
     </div>
@@ -190,4 +282,5 @@
 
   <script src="app.js"></script>
 </body>
+
 </html>
