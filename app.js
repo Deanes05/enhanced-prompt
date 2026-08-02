@@ -18,9 +18,10 @@ const activeModelTagEl = document.getElementById("active-model-tag");
 const modelSelectEl = document.getElementById("model-select");
 
 // Mode Tabs & Containers
-const tabNicheSearch = document.getElementById("tab-niche-search");
-const tabStyleTransfer = document.getElementById("tab-style-transfer");
-const tabTextPrompt = document.getElementById("tab-text-prompt");
+const tabSeo = document.getElementById("tab-seo");
+const tabTrends = document.getElementById("tab-trends");
+const tabImage = document.getElementById("tab-image");
+const tabGemini = document.getElementById("tab-gemini");
 
 const nicheSearchContainer = document.getElementById("niche-search-container");
 const styleTransferContainer = document.getElementById("style-transfer-container");
@@ -90,12 +91,17 @@ function initWebhookState() {
 }
 
 function initModeTabs() {
-  if (tabNicheSearch) {
-    tabNicheSearch.addEventListener("click", () => {
+  const allTabs = [tabSeo, tabTrends, tabImage, tabGemini];
+
+  function setActiveTab(activeTab) {
+    allTabs.forEach(t => { if (t) t.classList.remove("active"); });
+    if (activeTab) activeTab.classList.add("active");
+  }
+
+  if (tabSeo) {
+    tabSeo.addEventListener("click", () => {
       currentMode = "niche-search";
-      tabNicheSearch.classList.add("active");
-      tabStyleTransfer.classList.remove("active");
-      tabTextPrompt.classList.remove("active");
+      setActiveTab(tabSeo);
 
       nicheSearchContainer.classList.remove("hidden");
       styleTransferContainer.classList.add("hidden");
@@ -103,18 +109,31 @@ function initModeTabs() {
 
       modelSelectEl.value = "seo";
       updateActiveModelTag("seo");
-      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-play"></i> [RUN SYSTEM EXECUTE]`;
+      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-play"></i> [RUN SEO ANALYTICS]`;
     });
   }
 
-  if (tabStyleTransfer) {
-    tabStyleTransfer.addEventListener("click", () => {
-      currentMode = "style-transfer";
-      tabStyleTransfer.classList.add("active");
-      if (tabNicheSearch) tabNicheSearch.classList.remove("active");
-      tabTextPrompt.classList.remove("active");
+  if (tabTrends) {
+    tabTrends.addEventListener("click", () => {
+      currentMode = "niche-search";
+      setActiveTab(tabTrends);
 
-      if (nicheSearchContainer) nicheSearchContainer.classList.add("hidden");
+      nicheSearchContainer.classList.remove("hidden");
+      styleTransferContainer.classList.add("hidden");
+      singlePromptContainer.classList.add("hidden");
+
+      modelSelectEl.value = "trends";
+      updateActiveModelTag("trends");
+      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-play"></i> [RUN TREND ANALYTICS]`;
+    });
+  }
+
+  if (tabImage) {
+    tabImage.addEventListener("click", () => {
+      currentMode = "style-transfer";
+      setActiveTab(tabImage);
+
+      nicheSearchContainer.classList.add("hidden");
       styleTransferContainer.classList.remove("hidden");
       singlePromptContainer.classList.add("hidden");
 
@@ -124,14 +143,12 @@ function initModeTabs() {
     });
   }
 
-  if (tabTextPrompt) {
-    tabTextPrompt.addEventListener("click", () => {
+  if (tabGemini) {
+    tabGemini.addEventListener("click", () => {
       currentMode = "text-prompt";
-      tabTextPrompt.classList.add("active");
-      if (tabNicheSearch) tabNicheSearch.classList.remove("active");
-      tabStyleTransfer.classList.remove("active");
+      setActiveTab(tabGemini);
 
-      if (nicheSearchContainer) nicheSearchContainer.classList.add("hidden");
+      nicheSearchContainer.classList.add("hidden");
       styleTransferContainer.classList.add("hidden");
       singlePromptContainer.classList.remove("hidden");
 
@@ -676,19 +693,24 @@ function generateDemoVariations(promptText, styleRef, subjectRef, style, model) 
   if (model === "seo") {
     const seoData = {
       niche: keyword,
-      seo_search_volume: "52,400 / mo",
-      seo_difficulty: "36/100 (Moderate)",
-      estimated_rpm: "$24.50 - $48.00",
-      estimated_cpc: "$2.40 - $6.20",
-      est_monthly_revenue_potential: "$4,800 - $14,500",
+      seo_search_volume: "58,400 / mo",
+      seo_difficulty: "38/100 (Moderate Competition)",
+      estimated_rpm: "$28.50 - $54.00 (AdSense / Mediavine)",
+      estimated_cpc: "$2.80 - $6.50",
+      est_monthly_revenue_potential: "$5,800 - $16,200",
       pros: [
-        "High advertiser competition with premium recurring software affiliate payouts.",
-        "Sustained 45%+ annual search growth driven by creator economy.",
-        "Rich long-tail keyword clusters for rapid Google & YouTube ranking."
+        "High Advertiser Demand: Strong bidding competition with $2.80 - $6.50 CPC rates.",
+        "Lucrative Affiliate Commissions: SaaS tools offering 30%-50% recurring monthly payouts.",
+        "Evergreen Growth Trajectory: Sustained 45%+ annual search volume expansion.",
+        "High Commercial Intent: Users actively comparing pricing and buying options.",
+        "Rich Long-Tail Opportunities: Hundreds of low-competition search query variations."
       ],
       cons: [
-        "Requires active content updates to keep pace with new AI releases.",
-        "High domain authority sites hold top positions for broad seed keywords."
+        "High Domain Authority Competition: Major media sites occupy top 3 Google positions.",
+        "Frequent Content Updates Required: Rapid pace of AI software releases requires active editing.",
+        "Link Building Investment: Requires building authoritative contextual backlinks.",
+        "AI Search Overviews: Google SGE capturing a portion of top-of-funnel informational clicks.",
+        "E-E-A-T Verification: Demands hands-on product testing to establish search authority."
       ]
     };
 
@@ -702,16 +724,18 @@ function generateDemoVariations(promptText, styleRef, subjectRef, style, model) 
   } else if (model === "trends") {
     const trendData = {
       niche: keyword,
-      usa_popularity: "🔥 96/100 (Top 5 Search Trend)",
-      philippines_popularity: "📈 91/100 (Surging Interest)",
-      usa_insights: "US users prioritize automated workflow integrations, 4K rendering speed, and commercial licensing.",
-      philippines_insights: "PH users favor CapCut/TikTok integrations, GCash payments, and remote freelance client work.",
-      target_demographics: "Ages 18-35 | Content Creators & Remote Freelancers",
-      growth_trajectory: "🚀 +48% YoY Expansion",
+      usa_popularity: "🔥 96/100 (Top 5 Search Trend in US Tech & Media)",
+      philippines_popularity: "📈 92/100 (Surging Interest on TikTok & Shopee)",
+      usa_insights: "US market prioritizes high-end SaaS integrations, 4K rendering speed, desktop convenience, and direct credit card / Apple Pay subscriptions.",
+      philippines_insights: "PH market prioritizes CapCut/TikTok integrations, GCash / ShopeePay payment support, mobile accessibility, and freelance client workflows.",
+      target_demographics: "Ages 18-35 | Content Creators, Remote Freelancers & Marketing Agencies",
+      growth_trajectory: "🚀 +48% YoY Annual Search Volume Expansion",
       multidisciplinary_stats: [
-        "76% Mobile search share in Philippines vs 64% in USA",
-        "Peak engagement: 7:30 PM - 11:00 PM local time",
-        "Primary traffic: Google Search (50%), TikTok (30%), YouTube Shorts (20%)"
+        "76% Mobile search share in Philippines vs 64% Desktop/Mobile split in USA",
+        "Peak user engagement window: 7:30 PM - 11:00 PM local time across both regions",
+        "Primary discovery channels: Google Organic Search (48%), TikTok/Reels (32%), YouTube Shorts (20%)",
+        "US Checkout Behavior: 82% Direct web subscription purchase via Credit Card/PayPal",
+        "PH Checkout Behavior: 74% GCash / ShopeePay / Cash-on-Delivery preferred over credit card"
       ]
     };
 

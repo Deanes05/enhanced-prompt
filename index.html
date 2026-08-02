@@ -63,20 +63,31 @@
     <main class="main-layout">
       <!-- Mode Switcher Tabs (Terminal Function Keys) -->
       <div class="mode-tabs">
-        <button id="tab-niche-search" class="mode-tab active">
-          <i class="fa-solid fa-magnifying-glass-chart"></i> [F1] NICHE ANALYTICS
+        <button id="tab-seo" class="mode-tab active">
+          <i class="fa-solid fa-chart-line"></i> [F1] SEO & AD REVENUE
         </button>
-        <button id="tab-style-transfer" class="mode-tab">
-          <i class="fa-solid fa-image"></i> [F2] AI IMAGE GENERATOR
+        <button id="tab-trends" class="mode-tab">
+          <i class="fa-solid fa-earth-americas"></i> [F2] USA VS PH TRENDS
         </button>
-        <button id="tab-text-prompt" class="mode-tab">
-          <i class="fa-solid fa-file-lines"></i> [F3] PROMPT ENHANCER
+        <button id="tab-image" class="mode-tab">
+          <i class="fa-solid fa-image"></i> [F3] AI IMAGE GENERATOR
+        </button>
+        <button id="tab-gemini" class="mode-tab">
+          <i class="fa-solid fa-file-lines"></i> [F4] PROMPT ENHANCER
         </button>
       </div>
 
+      <!-- Hidden Model State Element -->
+      <select id="model-select" class="hidden">
+        <option value="seo" selected>seo</option>
+        <option value="trends">trends</option>
+        <option value="image">image</option>
+        <option value="gemini">gemini</option>
+      </select>
+
       <!-- Prompt Input Panel -->
       <section class="input-card card">
-        <!-- Niche Search Engine Inputs (Default active mode) -->
+        <!-- Niche Search Engine Inputs (Default active mode for SEO & Trends) -->
         <div id="niche-search-container" class="niche-search-box">
           <div class="search-bar-wrapper">
             <span class="prompt-symbol">SYSTEM_KEYWORD&gt;</span>
@@ -124,44 +135,7 @@
         </div>
 
         <!-- Enhancement & Generation Options -->
-        <div class="options-bar">
-          <!-- Model Dropdown Selector -->
-          <div class="option-group">
-            <label for="model-select"><i class="fa-solid fa-robot"></i> ENGINE_TYPE:</label>
-            <div class="select-wrapper">
-              <select id="model-select" class="custom-select">
-                <option value="seo" selected>📈 SEO & AD REVENUE INTELLIGENCE</option>
-                <option value="trends">🌏 USA VS PH TREND ANALYTICS</option>
-                <option value="image">🎨 AI IMAGE GENERATOR (FLUX.1)</option>
-                <option value="gemini">📝 TEXT PROMPT ENHANCER</option>
-              </select>
-              <i class="fa-solid fa-chevron-down select-arrow"></i>
-            </div>
-          </div>
-
-          <!-- Target Style Selection -->
-          <div class="option-group">
-            <label><i class="fa-solid fa-sliders"></i> FORMAT_STYLE:</label>
-            <div class="pill-selector">
-              <label class="pill-option active">
-                <input type="radio" name="prompt-style" value="detailed" checked>
-                <span>[DETAILED]</span>
-              </label>
-              <label class="pill-option">
-                <input type="radio" name="prompt-style" value="concise">
-                <span>[CONCISE]</span>
-              </label>
-              <label class="pill-option">
-                <input type="radio" name="prompt-style" value="creative">
-                <span>[CREATIVE]</span>
-              </label>
-              <label class="pill-option">
-                <input type="radio" name="prompt-style" value="system">
-                <span>[SYSTEM]</span>
-              </label>
-            </div>
-          </div>
-
+        <div class="options-bar text-right">
           <button id="enhance-btn" class="btn-primary btn-generate">
             <span class="btn-text"><i class="fa-solid fa-play"></i> [RUN SYSTEM EXECUTE]</span>
             <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> EXECUTING_SYSTEM_CALL...</span>
