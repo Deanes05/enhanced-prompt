@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DEN-VULKAN BIOS (TM) v1.03 | CYAN CRT TERMINAL</title>
-  <meta name="description" content="DEN-VULKAN BIOS Vintage Cyan CRT Terminal Interface for High-Performance Human Prompt Architecture.">
+  <title>MICROCYBER BATTLEDECK V02 | DEN-VULKAN PROMPT ARCHITECT</title>
+  <meta name="description" content="Microcyber Battledeck V02 Tactical Emerald Green Interface for Human Prompt Architecture.">
 
   <!-- Google Fonts: Share Tech Mono & VT323 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,31 +25,33 @@
   <!-- Terminal Main Window Container -->
   <div class="terminal-frame">
 
-    <!-- Top BIOS Header Bar -->
-    <header class="bios-header">
-      <div class="bios-top-line">
-        <span class="bios-title">DEN-VULKAN BIOS (TM)</span>
-        <span class="bios-copy">COPYRIGHT DEN-VULKAN(C) 2026</span>
-        <span class="bios-tag">RESEARCH</span>
-        <span class="bios-ver">VER V1.03</span>
-        <span class="bios-port">PORT......3</span>
+    <!-- Top Microcyber Barcode Header -->
+    <header class="cyber-header">
+      <div class="cyber-barcode-line">
+        <div class="barcode-title">
+          <i class="fa-solid fa-microchip"></i> 05 KILO MICROCYBER BATTLEDECK V02 // DEN-VULKAN PROMPT ARCHITECT
+        </div>
+        <div class="barcode-stats">
+          <span class="scan-status">SCANNING 100%</span>
+          <span class="file-count">1440 / 1440 FILES</span>
+        </div>
       </div>
 
-      <!-- BIOS Top Menu Bar -->
-      <nav class="bios-menu-bar">
-        <span class="bios-menu-item active">SUMMARY</span>
-        <span class="bios-menu-item">FIXED</span>
-        <span class="bios-menu-item">BOOT</span>
-        <span class="bios-menu-item">SEQ</span>
-        <span class="bios-menu-item">MORE+</span>
+      <!-- Main Navigation Switcher (EXACTLY TWO VIEWS) -->
+      <nav class="cyber-nav-bar">
+        <div class="nav-tabs-group">
+          <button id="view-tab-prompt" class="cyber-tab active">
+            <i class="fa-solid fa-terminal"></i> [01 PROMPT ENGINE]
+          </button>
+          <button id="view-tab-history" class="cyber-tab">
+            <i class="fa-solid fa-clock-rotate-left"></i> [02 LOG HISTORY]
+          </button>
+        </div>
 
         <div class="header-actions">
           <button id="webhook-settings-btn" class="btn-icon" title="Configure n8n Webhook URL">
             <i class="fa-solid fa-gear"></i>
             <span id="webhook-indicator" class="status-dot"></span>
-          </button>
-          <button id="toggle-history-btn" class="btn-secondary">
-            <i class="fa-solid fa-clock-rotate-left"></i> LOG_HISTORY
           </button>
         </div>
       </nav>
@@ -64,111 +66,88 @@
       </div>
     </div>
 
-    <!-- Main BIOS Dual Panel Body Layout -->
-    <main class="bios-main-grid">
-      <!-- Left Column Panel: Control & Input Console -->
-      <section class="bios-panel bios-panel-left">
-        <div class="panel-header">
-          <h3><i class="fa-solid fa-terminal"></i> CMOS_SETUP_UTILITY // SYSTEM_INPUT</h3>
+    <main class="main-layout">
+      <!-- Hidden Model Selector for State Compatibility -->
+      <select id="model-select" class="hidden">
+        <option value="hyper_engine" selected>hyper_engine</option>
+      </select>
+
+      <!-- VIEW 1: PROMPT ENGINE CONTAINER -->
+      <div id="view-prompt-container" class="cyber-view-pane">
+        <!-- Dual Column Battledeck Grid -->
+        <div class="cyber-dual-grid">
+          <!-- Left Panel: Input Console & Control -->
+          <section class="cyber-card cyber-panel-left">
+            <div class="card-badge-header">
+              <span class="badge-title"><i class="fa-solid fa-satellite-dish"></i> INPUT_STREAM_CONSOLE</span>
+              <span class="badge-code">SOCKET_SYS_014008</span>
+            </div>
+
+            <div class="binary-decor-box">
+              <span>01010011 01000001 01001101 01010101 01010010 01000001 01001001</span>
+            </div>
+
+            <div class="textarea-wrapper">
+              <span class="prompt-symbol">HUMAN_RAW_PROMPT_INPUT&gt;</span>
+              <textarea id="raw-prompt"
+                placeholder="TYPE RAW HUMAN PROMPT OR IDEA HERE (e.g. Write a python script for automated web scraping and data parsing)..."
+                rows="10" maxlength="3000"></textarea>
+              <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="options-bar">
+              <button id="enhance-btn" class="btn-primary btn-generate">
+                <span class="btn-text">⚡ [RUN BATTLEDECK PROMPT SYNTHESIS]</span>
+                <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> SYNTHESIZING_MASTER_PROMPT...</span>
+              </button>
+            </div>
+
+            <div id="status-bar" class="status-bar hidden"></div>
+          </section>
+
+          <!-- Right Panel: Output Buffer Monitor -->
+          <section class="cyber-card cyber-panel-right">
+            <div class="card-badge-header">
+              <span class="badge-title"><i class="fa-solid fa-shield-halved"></i> MASTER_OUTPUT_BUFFER</span>
+              <span class="comparison-tag" id="active-model-tag">STATUS: COMPLETE</span>
+            </div>
+
+            <div id="results-grid" class="results-grid">
+              <!-- Initial Placeholder State -->
+              <div class="empty-state card">
+                <div class="empty-icon"><i class="fa-solid fa-terminal"></i></div>
+                <h3>BATTLEDECK_READY: INPUT PROMPT AND CLICK EXECUTE</h3>
+                <p>Type your raw human prompt idea on the left console and click <strong>⚡ [RUN BATTLEDECK PROMPT SYNTHESIS]</strong>.</p>
+              </div>
+            </div>
+          </section>
         </div>
+      </div>
 
-        <div class="cmos-info-block">
-          <p>DEN-VULKAN HYPER ENGINE SETUP UTILITY - VERSION 1.03</p>
-          <p>MOD: CON: COLS=80 LINES=25 | COLOR: CYAN (0A)</p>
-          <p>SYSTEM STATUS: READY FOR HUMAN PROMPT ENHANCEMENT</p>
-        </div>
-
-        <!-- Hidden Model Selector for State Compatibility -->
-        <select id="model-select" class="hidden">
-          <option value="hyper_engine" selected>hyper_engine</option>
-        </select>
-
-        <div class="textarea-wrapper">
-          <span class="prompt-symbol">HUMAN_RAW_PROMPT_INPUT&gt;</span>
-          <textarea id="raw-prompt"
-            placeholder="TYPE RAW HUMAN PROMPT OR IDEA HERE (e.g. Create a python script for automated web scraping and data parsing)..."
-            rows="10" maxlength="3000"></textarea>
-          <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-
-        <div class="options-bar text-right">
-          <button id="enhance-btn" class="btn-primary btn-generate">
-            <span class="btn-text">&gt; [RUN DEN-VULKAN HYPER EXECUTE]</span>
-            <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> EXECUTING_SYSTEM_CALL...</span>
-          </button>
-        </div>
-
-        <div id="status-bar" class="status-bar hidden"></div>
-      </section>
-
-      <!-- Right Column Panel: System Monitor & Master Output Buffer -->
-      <section class="bios-panel bios-panel-right">
-        <div class="panel-header">
-          <h3><i class="fa-solid fa-microchip"></i> SYSTEM_MONITOR // OUTPUT_BUFFER</h3>
-          <span class="comparison-tag" id="active-model-tag">ENGINE: DEN-VULKAN ARCHITECT</span>
-        </div>
-
-        <div id="results-grid" class="results-grid">
-          <!-- Initial Placeholder State -->
-          <div class="empty-state card">
-            <div class="empty-icon"><i class="fa-solid fa-terminal"></i></div>
-            <h3>SYSTEM_READY: INPUT PROMPT AND CLICK EXECUTE</h3>
-            <p>Type your raw human prompt idea on the left console and click <strong>&gt; [RUN DEN-VULKAN HYPER EXECUTE]</strong>.</p>
+      <!-- VIEW 2: LOG HISTORY CONTAINER (IN-PAGE MAIN VIEW) -->
+      <div id="view-history-container" class="cyber-view-pane hidden">
+        <section class="cyber-card full-history-card">
+          <div class="card-badge-header">
+            <span class="badge-title"><i class="fa-solid fa-clock-rotate-left"></i> LOG_HISTORY_BUFFER // RECENT_EXECUTIONS</span>
+            <button id="clear-history-btn" class="btn-secondary"><i class="fa-solid fa-trash-can"></i> [CLEAR LOG BUFFER]</button>
           </div>
-        </div>
-      </section>
+
+          <div id="history-list" class="history-grid-list">
+            <p class="history-empty">NO LOG HISTORY RECORDED.</p>
+          </div>
+        </section>
+      </div>
     </main>
 
-    <!-- Bottom BIOS Status Banks & ASCII Banner -->
-    <footer class="bios-footer">
-      <div class="bios-banks-row">
-        <div class="bank-box">
-          <span class="bank-label">BANK 1</span>
-          <span class="bank-val">HYPER ENGINE ACTIVE</span>
-          <span class="bank-val">PROMPT ARCHITECT ONLINE</span>
-          <span class="bank-val">CYAN PHOSPHOR READY</span>
-        </div>
-        <div class="bank-box">
-          <span class="bank-label">BANK 2</span>
-          <span class="bank-val">LLM PROMPT READY</span>
-          <span class="bank-val">PARSE ENGINE ACTIVE</span>
-          <span class="bank-val">STATUS: OK</span>
-        </div>
-      </div>
-
-      <!-- Big Monospace ASCII Banner Header matching reference image -->
-      <div class="bios-ascii-banner">
-        <pre>
-  ___  ___ _  _   _   _ _   _ _    _  ___   _   _ 
- |   \| __| \| | | | | | | | | |  | |/   \ | | | |
- | |) | _|| .` | | \_/ | |_| | |__| | |_| || |_| |
- |___/|___|_|\_|  \___/ \___/|____|_|_| |_| \___/ 
-        </pre>
-      </div>
-
-      <div class="footer-bottom-line">
-        <p>TITLE: DEN-VULKAN BIOS | MODE: CON COLS=80 LINES=30 | COLOR: 0A (CYAN)</p>
+    <footer class="app-footer">
+      <div class="footer-container">
+        <p>MICROCYBER BATTLEDECK V02 // DEN-VULKAN PROMPT ARCHITECT // SYSTEM ONLINE</p>
         <div class="footer-links">
           <a href="website.json" download><i class="fa-solid fa-download"></i> [DOWNLOAD_WORKFLOW_JSON]</a>
         </div>
       </div>
     </footer>
   </div>
-
-  <!-- History Drawer -->
-  <aside id="history-drawer" class="history-drawer">
-    <div class="drawer-header">
-      <h3><i class="fa-solid fa-history"></i> LOG_HISTORY_BUFFER</h3>
-      <button id="close-history-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div id="history-list" class="history-list">
-      <p class="history-empty">NO LOG HISTORY RECORDED.</p>
-    </div>
-    <div class="drawer-footer">
-      <button id="clear-history-btn" class="btn-secondary btn-full"><i class="fa-solid fa-trash-can"></i> [CLEAR_LOG_BUFFER]</button>
-    </div>
-  </aside>
-  <div id="drawer-overlay" class="drawer-overlay"></div>
 
   <!-- Settings Modal for n8n Webhook -->
   <div id="settings-modal" class="modal">

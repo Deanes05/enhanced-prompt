@@ -1,9 +1,9 @@
 /* ==========================================================================
-   HYPER ENGINE PROMPT ARCHITECT - APPLICATION LOGIC
+   MICROCYBER BATTLEDECK V02 - APPLICATION LOGIC
    ========================================================================== */
 
 const STORAGE_WEBHOOK_KEY = "prompt_enhancer_n8n_webhook";
-const STORAGE_HISTORY_KEY = "prompt_enhancer_history_v3";
+const STORAGE_HISTORY_KEY = "prompt_enhancer_history_v4";
 const DEFAULT_WEBHOOK_URL = "http://localhost:5678/webhook/enhance-promp";
 
 // DOM Elements
@@ -13,6 +13,15 @@ const clearPromptBtn = document.getElementById("clear-prompt-btn");
 const statusBarEl = document.getElementById("status-bar");
 const resultsGridEl = document.getElementById("results-grid");
 const activeModelTagEl = document.getElementById("active-model-tag");
+
+// Navigation View Tabs (EXACTLY TWO VIEWS)
+const viewTabPrompt = document.getElementById("view-tab-prompt");
+const viewTabHistory = document.getElementById("view-tab-history");
+
+const viewPromptContainer = document.getElementById("view-prompt-container");
+const viewHistoryContainer = document.getElementById("view-history-container");
+const historyListEl = document.getElementById("history-list");
+const clearHistoryBtn = document.getElementById("clear-history-btn");
 
 // Header & Modal Elements
 const webhookSettingsBtn = document.getElementById("webhook-settings-btn");
@@ -27,14 +36,6 @@ const testWebhookBtn = document.getElementById("test-webhook-btn");
 const saveWebhookBtn = document.getElementById("save-webhook-btn");
 const testResultEl = document.getElementById("webhook-test-result");
 
-// History Drawer Elements
-const toggleHistoryBtn = document.getElementById("toggle-history-btn");
-const closeHistoryBtn = document.getElementById("close-history-btn");
-const historyDrawer = document.getElementById("history-drawer");
-const drawerOverlay = document.getElementById("drawer-overlay");
-const historyListEl = document.getElementById("history-list");
-const clearHistoryBtn = document.getElementById("clear-history-btn");
-
 // App State
 let webhookUrl = localStorage.getItem(STORAGE_WEBHOOK_KEY) || DEFAULT_WEBHOOK_URL;
 let historyData = JSON.parse(localStorage.getItem(STORAGE_HISTORY_KEY) || "[]");
@@ -43,6 +44,7 @@ let historyData = JSON.parse(localStorage.getItem(STORAGE_HISTORY_KEY) || "[]");
 document.addEventListener("DOMContentLoaded", () => {
   initWebhookState();
   initEventListeners();
+  initViewSwitcher();
 });
 
 function initWebhookState() {
@@ -53,6 +55,31 @@ function initWebhookState() {
   } else {
     webhookIndicatorEl.classList.add("offline");
     webhookBannerEl.classList.remove("hidden");
+  }
+}
+
+// Exactly 2 Main Navigation View Switcher
+function initViewSwitcher() {
+  if (viewTabPrompt) {
+    viewTabPrompt.addEventListener("click", () => {
+      viewTabPrompt.classList.add("active");
+      viewTabHistory.classList.remove("active");
+
+      viewPromptContainer.classList.remove("hidden");
+      viewHistoryContainer.classList.add("hidden");
+    });
+  }
+
+  if (viewTabHistory) {
+    viewTabHistory.addEventListener("click", () => {
+      viewTabHistory.classList.add("active");
+      viewTabPrompt.classList.remove("active");
+
+      viewPromptContainer.classList.add("hidden");
+      viewHistoryContainer.classList.remove("hidden");
+
+      renderInPageHistoryList();
+    });
   }
 }
 
@@ -87,16 +114,11 @@ function initEventListeners() {
     testWebhookBtn.addEventListener("click", testWebhookConnection);
   }
 
-  // History Drawer
-  if (toggleHistoryBtn) toggleHistoryBtn.addEventListener("click", openHistoryDrawer);
-  if (closeHistoryBtn) closeHistoryBtn.addEventListener("click", closeHistoryDrawer);
-  if (drawerOverlay) drawerOverlay.addEventListener("click", closeHistoryDrawer);
-
   if (clearHistoryBtn) {
     clearHistoryBtn.addEventListener("click", () => {
       historyData = [];
       localStorage.removeItem(STORAGE_HISTORY_KEY);
-      renderHistoryList();
+      renderInPageHistoryList();
       showStatus("Log history buffer cleared.", "info");
     });
   }
@@ -106,12 +128,12 @@ async function handleEnhanceRequest() {
   const promptText = rawPromptInput ? rawPromptInput.value.trim() : "";
 
   if (!promptText) {
-    showStatus("PLEASE ENTER A RAW HUMAN PROMPT BEFORE EXECUTING HYPER ENGINE.", "error");
+    showStatus("PLEASE ENTER A RAW HUMAN PROMPT BEFORE EXECUTING BATTLEDECK PROMPT SYNTHESIS.", "error");
     return;
   }
 
   setLoadingState(true);
-  showStatus(`CONTACTING HYPER ENGINE PIPELINE...`, "info");
+  showStatus(`CONTACTING BATTLEDECK PROMPT SYNTHESIZER PIPELINE...`, "info");
 
   const payload = {
     prompt: promptText,
@@ -148,11 +170,11 @@ async function handleEnhanceRequest() {
 
     renderHyperMasterPromptCard(resultText);
     saveToHistory(promptText, resultText);
-    showStatus(`HYPER ENGINE ENHANCEMENT SUCCESSFUL. MASTER PROMPT BUFFER UPDATED.`, "success");
+    showStatus(`BATTLEDECK PROMPT SYNTHESIS COMPLETE. MASTER OUTPUT BUFFER UPDATED.`, "success");
 
   } catch (err) {
     console.warn("n8n Webhook connection failed, using fallback generator:", err);
-    showStatus(`WEBHOOK WARNING: ${err.message}. HYPER DEMO OUTPUT GENERATED BELOW.`, "error");
+    showStatus(`WEBHOOK WARNING: ${err.message}. BATTLEDECK DEMO OUTPUT GENERATED BELOW.`, "error");
     const demoPrompt = generateDemoHyperPrompt(promptText);
     renderHyperMasterPromptCard(demoPrompt);
   } finally {
@@ -172,8 +194,8 @@ function renderHyperMasterPromptCard(promptText) {
   card.innerHTML = `
     <div class="result-header">
       <div class="model-name">
-        <i class="fa-solid fa-bolt" style="color: #00ffcc;"></i>
-        <span>DEN-VULKAN MASTER PROMPT</span>
+        <i class="fa-solid fa-bolt" style="color: #00ffaa;"></i>
+        <span>BATTLEDECK MASTER PROMPT</span>
         <span class="badge-text-only">PRODUCTION-READY LLM PROMPT</span>
       </div>
       <div class="result-actions">
@@ -269,7 +291,7 @@ function showStatus(msg, type = "info") {
   statusBarEl.classList.remove("hidden");
 }
 
-// History Handling
+// History Handling (In-Page View 2)
 function saveToHistory(prompt, result) {
   const item = {
     id: Date.now(),
@@ -279,34 +301,25 @@ function saveToHistory(prompt, result) {
   };
 
   historyData.unshift(item);
-  if (historyData.length > 20) historyData.pop();
+  if (historyData.length > 30) historyData.pop();
   localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(historyData));
 }
 
-function openHistoryDrawer() {
-  renderHistoryList();
-  historyDrawer.classList.add("open");
-  drawerOverlay.classList.add("active");
-}
+function renderInPageHistoryList() {
+  if (!historyListEl) return;
 
-function closeHistoryDrawer() {
-  historyDrawer.classList.remove("open");
-  drawerOverlay.classList.remove("active");
-}
-
-function renderHistoryList() {
   if (historyData.length === 0) {
     historyListEl.innerHTML = `<p class="history-empty">NO LOG HISTORY RECORDED.</p>`;
     return;
   }
 
   historyListEl.innerHTML = historyData.map(item => `
-    <div class="history-item" onclick="loadHistoryItem(${item.id})">
-      <div class="history-meta">
-        <span class="history-time">[${escapeHtml(item.timestamp)}]</span>
-        <span class="history-model">HYPER_ENGINE</span>
+    <div class="history-card-item" onclick="loadHistoryItem(${item.id})">
+      <div class="history-item-header">
+        <span>LOG ID: #${item.id}</span>
+        <span>TIME: [${escapeHtml(item.timestamp)}]</span>
       </div>
-      <div class="history-prompt">"${escapeHtml(item.prompt)}"</div>
+      <div class="history-item-prompt">PROMPT: "${escapeHtml(item.prompt)}"</div>
     </div>
   `).join("");
 }
@@ -314,9 +327,10 @@ function renderHistoryList() {
 window.loadHistoryItem = function (id) {
   const found = historyData.find(h => h.id === id);
   if (found) {
+    // Switch to view 1 prompt engine and render the result
+    if (viewTabPrompt) viewTabPrompt.click();
     renderHyperMasterPromptCard(found.result);
-    closeHistoryDrawer();
-    showStatus(`LOADED LOG HISTORY ITEM [${found.timestamp}]`, "info");
+    showStatus(`LOADED LOG HISTORY ITEM #${found.id} [${found.timestamp}]`, "info");
   }
 };
 
@@ -337,7 +351,7 @@ async function testWebhookConnection() {
     return;
   }
 
-  testResultEl.innerHTML = `<span style="color:#ffb000;"><i class="fa-solid fa-spinner fa-spin"></i> TESTING CONNECTION...</span>`;
+  testResultEl.innerHTML = `<span style="color:#00ffaa;"><i class="fa-solid fa-spinner fa-spin"></i> TESTING CONNECTION...</span>`;
 
   try {
     const res = await fetch(url, {
@@ -347,7 +361,7 @@ async function testWebhookConnection() {
     });
 
     if (res.ok) {
-      testResultEl.innerHTML = `<span style="color:#10b981;"><i class="fa-solid fa-check"></i> CONNECTION SUCCESSFUL! HTTP ${res.status}</span>`;
+      testResultEl.innerHTML = `<span style="color:#00ff66;"><i class="fa-solid fa-check"></i> CONNECTION SUCCESSFUL! HTTP ${res.status}</span>`;
     } else {
       testResultEl.innerHTML = `<span style="color:#f43f5e;"><i class="fa-solid fa-xmark"></i> CONNECTION FAILED: HTTP ${res.status}</span>`;
     }
