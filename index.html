@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DEN-VULKAN PROMPT ARCHITECT</title>
-  <meta name="description" content="Minimalist Glassmorphism Interface for High-Performance Human Prompt Architecture.">
+  <title>DEN-VULKAN PROMPT ARCHITECT // High-Performance Studio</title>
+  <meta name="description" content="Next-Generation Optimized Human Prompt Architecture Platform powered by DEN-VULKAN Hyper Engine.">
 
-  <!-- Google Fonts: Inter -->
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,93 +19,168 @@
 </head>
 
 <body>
-  <!-- Ambient Space Glass Background -->
+  <!-- Ambient Space Background -->
   <div class="space-background"></div>
 
-  <!-- Main Glass Container Frame -->
-  <div class="terminal-frame glass-panel">
+  <!-- Main Application Glass Workspace -->
+  <div class="app-viewport">
+    <div class="studio-frame glass-panel">
 
-    <!-- Clean Header Bar -->
-    <header class="clean-header">
-      <h1 class="brand-title"><i class="fa-solid fa-code"></i> DEN-VULKAN PROMPT ARCHITECT</h1>
-
-      <div class="header-right">
-        <span class="status-pill"><span id="webhook-indicator" class="status-dot"></span> ONLINE</span>
-        <button id="webhook-settings-btn" class="btn-glass-icon" title="Configure n8n Webhook URL">
-          <i class="fa-solid fa-gear"></i>
-        </button>
-      </div>
-    </header>
-
-    <!-- Webhook Notice Banner if not configured -->
-    <div id="webhook-banner" class="webhook-banner hidden">
-      <div class="banner-content">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <span>SYS_NOTICE: RUNNING IN DEMO MODE. CONNECT YOUR N8N WEBHOOK URL FOR LIVE AI EXECUTION.</span>
-        <button id="banner-config-btn" class="btn-banner">[CONNECT WEBHOOK]</button>
-      </div>
-    </div>
-
-    <!-- Main Layout: Clean 2-Column Glass Grid -->
-    <main class="clean-dual-grid">
-      <!-- Left Glass Panel: Prompt Input Console -->
-      <section class="glass-card panel-input">
-        <div class="card-header">
-          <h3><i class="fa-solid fa-terminal"></i> HUMAN PROMPT INPUT</h3>
-        </div>
-
-        <div class="textarea-wrapper">
-          <textarea id="raw-prompt"
-            placeholder="TYPE RAW HUMAN PROMPT OR IDEA HERE (e.g. Write a python script for automated web scraping and data parsing)..."
-            rows="12" maxlength="3000"></textarea>
-          <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-
-        <div class="options-bar">
-          <button id="enhance-btn" class="btn-obsidian-primary">
-            <span class="btn-text">[ENHANCE PROMPT]</span>
-            <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> ENHANCING_PROMPT...</span>
-          </button>
-        </div>
-
-        <div id="status-bar" class="status-bar hidden"></div>
-      </section>
-
-      <!-- Right Glass Panel: Master Output Buffer -->
-      <section class="glass-card panel-output">
-        <div class="card-header">
-          <h3><i class="fa-solid fa-shield-halved"></i> MASTER PROMPT OUTPUT</h3>
-        </div>
-
-        <!-- Enhanced Prompt Output Container -->
-        <div id="results-grid" class="results-container">
-          <div class="empty-state">
-            <div class="empty-icon"><i class="fa-solid fa-code"></i></div>
-            <h3>SYSTEM READY</h3>
-            <p>Input your raw human prompt idea on the left console and click <strong>[ENHANCE PROMPT]</strong>.</p>
+      <!-- Header Section -->
+      <header class="studio-header">
+        <div class="brand-group">
+          <div class="brand-logo">
+            <i class="fa-solid fa-cube"></i>
+          </div>
+          <div class="brand-text">
+            <h1 class="brand-title">DEN-VULKAN</h1>
+            <span class="brand-tagline">PROMPT ARCHITECT STUDIO</span>
           </div>
         </div>
-      </section>
-    </main>
 
-    <!-- Bottom Footer Bar -->
-    <footer class="clean-footer">
-      <div class="footer-links">
-        <a href="website.json" download><i class="fa-solid fa-download"></i> [DOWNLOAD_WORKFLOW_JSON]</a>
+        <div class="header-actions">
+          <div class="status-indicator" title="n8n Webhook Execution Status">
+            <span id="webhook-indicator" class="status-dot"></span>
+            <span id="status-text" class="status-label">ENGINE READY</span>
+          </div>
+          <button id="webhook-settings-btn" class="btn-icon-glass" title="Configure n8n Webhook Endpoint">
+            <i class="fa-solid fa-sliders"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Webhook Connection Notice Banner -->
+      <div id="webhook-banner" class="webhook-banner hidden">
+        <div class="banner-content">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>RUNNING IN DEMO MODE. CONNECT YOUR N8N WEBHOOK ENDPOINT FOR LIVE AI EXECUTION.</span>
+          <button id="banner-config-btn" class="btn-banner-action">CONNECT WEBHOOK</button>
+        </div>
       </div>
-    </footer>
 
+      <!-- Main Dual Studio Grid -->
+      <main class="studio-dual-grid">
+
+        <!-- Hidden Model Select for state compatibility -->
+        <select id="model-select" class="hidden">
+          <option value="hyper_engine" selected>hyper_engine</option>
+        </select>
+
+        <!-- LEFT STUDIO: Input & Prompt Engineering Panel -->
+        <section class="glass-card studio-left">
+          <div class="panel-header">
+            <h2><i class="fa-solid fa-wand-magic-sparkles"></i> PROMPT ENGINE STUDIO</h2>
+            <span class="panel-badge">RAW PROMPT CONSOLE</span>
+          </div>
+
+          <!-- Quick Preset Templates -->
+          <div class="preset-section">
+            <span class="section-label">QUICK TEMPLATES:</span>
+            <div class="preset-chips">
+              <button class="preset-chip" data-prompt="Build a full-stack Python automated web scraping pipeline with Playwright, error retries, and BigQuery data ingestion.">Python Automation</button>
+              <button class="preset-chip" data-prompt="Design a modern, high-converting SaaS landing page UI using Vanilla CSS glassmorphism, responsive grid, and dark mode theme.">UI/UX Web App</button>
+              <button class="preset-chip" data-prompt="Write an optimized BigQuery SQL query to calculate customer lifetime value (LTV), cohort retention rates, and churn metrics.">SQL Analytics</button>
+              <button class="preset-chip" data-prompt="Architect an autonomous AI agent system with tool declarations, structured JSON output schemas, and self-correction loops.">AI Agent Protocol</button>
+            </div>
+          </div>
+
+          <!-- Architecture Mode Selection Pills -->
+          <div class="mode-section">
+            <span class="section-label">ARCHITECTURE MODE:</span>
+            <div class="mode-pills">
+              <button class="mode-pill active" data-mode="xml_master">Master XML Structure</button>
+              <button class="mode-pill" data-mode="system_role">System Role Spec</button>
+              <button class="mode-pill" data-mode="few_shot">Few-Shot Protocol</button>
+            </div>
+          </div>
+
+          <!-- Textarea Input Console -->
+          <div class="console-box">
+            <div class="console-top">
+              <span class="console-label">HUMAN_RAW_PROMPT_INPUT&gt;</span>
+              <button id="clear-prompt-btn" class="btn-text-clear" title="Clear Text"><i class="fa-solid fa-xmark"></i> CLEAR</button>
+            </div>
+            <textarea id="raw-prompt"
+              placeholder="Type your raw human prompt idea or select a quick template above..."
+              rows="10" maxlength="4000"></textarea>
+            
+            <!-- Live Metrics Counter Bar -->
+            <div class="metrics-bar">
+              <span id="metric-chars">0 Chars</span>
+              <span id="metric-words">0 Words</span>
+              <span id="metric-tokens">~0 Est. Tokens</span>
+            </div>
+          </div>
+
+          <!-- Primary Action Button -->
+          <button id="enhance-btn" class="btn-aurora-primary">
+            <span class="btn-text"><i class="fa-solid fa-bolt"></i> ENHANCE PROMPT WITH DEN-VULKAN HYPER ENGINE</span>
+            <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> SYNTHESIZING MASTER PROMPT...</span>
+          </button>
+
+          <div id="status-bar" class="status-bar hidden"></div>
+        </section>
+
+        <!-- RIGHT STUDIO: Master Output Buffer & Actions -->
+        <section class="glass-card studio-right">
+          <div class="panel-header">
+            <h2><i class="fa-solid fa-terminal"></i> MASTER OUTPUT BUFFER</h2>
+            <div class="output-actions">
+              <button id="copy-prompt-btn" class="btn-action-glass" title="Copy Master Prompt" disabled>
+                <i class="fa-regular fa-copy"></i> COPY
+              </button>
+              <button id="download-prompt-btn" class="btn-action-glass" title="Download Master Prompt (.md)" disabled>
+                <i class="fa-solid fa-download"></i> DOWNLOAD
+              </button>
+            </div>
+          </div>
+
+          <!-- Results Grid Container -->
+          <div id="results-grid" class="results-viewport">
+            <div class="empty-state">
+              <div class="empty-glow-icon"><i class="fa-solid fa-brain"></i></div>
+              <h3>PROMPT ARCHITECT READY</h3>
+              <p>Type your raw human prompt idea on the left studio panel and click <strong>ENHANCE PROMPT WITH DEN-VULKAN HYPER ENGINE</strong>.</p>
+            </div>
+          </div>
+
+          <!-- LLM Compatibility Badges Bar -->
+          <div class="llm-tags-bar">
+            <span class="tags-label">OPTIMIZED FOR:</span>
+            <div class="tags-list">
+              <span class="llm-tag">ChatGPT-4o</span>
+              <span class="llm-tag">Claude 3.5 Sonnet</span>
+              <span class="llm-tag">Gemini 1.5 Pro</span>
+              <span class="llm-tag">DeepSeek V3</span>
+              <span class="llm-tag">Llama 3.3</span>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Footer Bar -->
+      <footer class="studio-footer">
+        <div class="footer-brand">
+          <span>DEN-VULKAN PROMPT ARCHITECT STUDIO // POWERED BY GEMINI & N8N</span>
+        </div>
+        <div class="footer-links">
+          <a href="website.json" download class="link-download"><i class="fa-solid fa-file-code"></i> WORKFLOW JSON</a>
+        </div>
+      </footer>
+
+    </div>
   </div>
 
   <!-- Settings Modal for n8n Webhook -->
   <div id="settings-modal" class="modal">
     <div class="modal-content glass-card">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-gear"></i> WEBHOOK CONFIGURATION</h3>
-        <button id="close-modal-btn" class="btn-glass-icon"><i class="fa-solid fa-xmark"></i></button>
+        <h3><i class="fa-solid fa-sliders"></i> WEBHOOK CONFIGURATION</h3>
+        <button id="close-modal-btn" class="btn-icon-glass"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
-        <p class="modal-desc">ENTER N8N PRODUCTION WEBHOOK ENDPOINT URL BELOW:</p>
+        <p class="modal-desc">Enter your production n8n webhook endpoint URL below to connect live AI processing:</p>
 
         <div class="form-group">
           <label for="webhook-url-input">N8N WEBHOOK ENDPOINT URL</label>
@@ -116,8 +191,8 @@
         <div id="webhook-test-result" class="test-result"></div>
       </div>
       <div class="modal-footer">
-        <button id="test-webhook-btn" class="btn-glass-secondary"><i class="fa-solid fa-plug"></i> [TEST CONNECTION]</button>
-        <button id="save-webhook-btn" class="btn-obsidian-primary">[SAVE CONFIGURATION]</button>
+        <button id="test-webhook-btn" class="btn-action-glass"><i class="fa-solid fa-plug"></i> TEST CONNECTION</button>
+        <button id="save-webhook-btn" class="btn-aurora-primary">SAVE CONFIGURATION</button>
       </div>
     </div>
   </div>
