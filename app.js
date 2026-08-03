@@ -1,30 +1,24 @@
 /* ==========================================================================
-   DEN-VULKAN PROMPT ARCHITECT - HIGH-PERFORMANCE APPLICATION LOGIC
+   DEN-VULKAN PROMPT ARCHITECT - APPLICATION LOGIC (WEBSITE.JSON INTEGRATION)
    ========================================================================== */
 
 const STORAGE_WEBHOOK_KEY = "prompt_enhancer_n8n_webhook";
-const DEFAULT_WEBHOOK_URL = "http://localhost:5678/webhook/enhance-promp";
+const DEFAULT_WEBHOOK_URL = "http://localhost:5678/webhook/enhanced-prompt";
 
 // DOM Elements Cache
 let enhanceBtn, rawPromptInput, clearPromptBtn, statusBarEl, resultsGridEl;
-let copyPromptBtn, downloadPromptBtn;
-let metricCharsEl, metricWordsEl, metricTokensEl;
 let webhookSettingsBtn, webhookIndicatorEl, webhookBannerEl, bannerConfigBtn;
 let settingsModal, closeModalBtn, webhookUrlInput, testWebhookBtn, saveWebhookBtn, testResultEl;
 
 // Application State
 let webhookUrl = localStorage.getItem(STORAGE_WEBHOOK_KEY) || DEFAULT_WEBHOOK_URL;
-let activeMode = "xml_master"; // xml_master | system_role | few_shot
 let lastGeneratedMasterPrompt = "";
-let metricsRafId = null;
 
 // Initialize App
 document.addEventListener("DOMContentLoaded", () => {
   cacheDOMElements();
   initWebhookState();
   initEventListeners();
-  initPresetChips();
-  initModePills();
 });
 
 function cacheDOMElements() {
@@ -33,12 +27,6 @@ function cacheDOMElements() {
   clearPromptBtn = document.getElementById("clear-prompt-btn");
   statusBarEl = document.getElementById("status-bar");
   resultsGridEl = document.getElementById("results-grid");
-  copyPromptBtn = document.getElementById("copy-prompt-btn");
-  downloadPromptBtn = document.getElementById("download-prompt-btn");
-
-  metricCharsEl = document.getElementById("metric-chars");
-  metricWordsEl = document.getElementById("metric-words");
-  metricTokensEl = document.getElementById("metric-tokens");
 
   webhookSettingsBtn = document.getElementById("webhook-settings-btn");
   webhookIndicatorEl = document.getElementById("webhook-indicator");
@@ -71,24 +59,11 @@ function initEventListeners() {
   if (clearPromptBtn && rawPromptInput) {
     clearPromptBtn.addEventListener("click", () => {
       rawPromptInput.value = "";
-      updateMetricsDebounced();
     });
   }
 
   if (enhanceBtn) {
     enhanceBtn.addEventListener("click", handleEnhanceRequest);
-  }
-
-  if (copyPromptBtn) {
-    copyPromptBtn.addEventListener("click", copyMasterPromptToClipboard);
-  }
-
-  if (downloadPromptBtn) {
-    downloadPromptBtn.addEventListener("click", downloadMasterPromptFile);
-  }
-
-  if (rawPromptInput) {
-    rawPromptInput.addEventListener("input", updateMetricsDebounced);
   }
 
   // Webhook settings modal
@@ -113,53 +88,7 @@ function initEventListeners() {
 }
 
 /* ==========================================================================
-   PRESET CHIPS & ARCHITECTURE MODES
-   ========================================================================== */
-function initPresetChips() {
-  const chips = document.querySelectorAll(".preset-chip");
-  chips.forEach(chip => {
-    chip.addEventListener("click", () => {
-      const promptText = chip.getAttribute("data-prompt");
-      if (promptText && rawPromptInput) {
-        rawPromptInput.value = promptText;
-        updateMetricsDebounced();
-        showStatus(`Loaded template: "${chip.innerText}"`, "info");
-      }
-    });
-  });
-}
-
-function initModePills() {
-  const pills = document.querySelectorAll(".mode-pill");
-  pills.forEach(pill => {
-    pill.addEventListener("click", () => {
-      pills.forEach(p => p.classList.remove("active"));
-      pill.classList.add("active");
-      activeMode = pill.getAttribute("data-mode") || "xml_master";
-      showStatus(`Architecture mode switched to: ${pill.innerText}`, "info");
-    });
-  });
-}
-
-/* ==========================================================================
-   DEBOUNCED LIVE METRICS CALCULATOR (120 FPS SMOOTH)
-   ========================================================================== */
-function updateMetricsDebounced() {
-  if (metricsRafId) cancelAnimationFrame(metricsRafId);
-  metricsRafId = requestAnimationFrame(() => {
-    const text = rawPromptInput ? rawPromptInput.value : "";
-    const chars = text.length;
-    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-    const estTokens = Math.ceil(chars / 4);
-
-    if (metricCharsEl) metricCharsEl.innerText = `${chars} Chars`;
-    if (metricWordsEl) metricWordsEl.innerText = `${words} Words`;
-    if (metricTokensEl) metricTokensEl.innerText = `~${estTokens} Est. Tokens`;
-  });
-}
-
-/* ==========================================================================
-   PROMPT ENHANCEMENT HANDLER
+   PROMPT ENHANCEMENT HANDLER (CATERING TO WEBSITE.JSON N8N WORKFLOW)
    ========================================================================== */
 async function handleEnhanceRequest() {
   const promptText = rawPromptInput ? rawPromptInput.value.trim() : "";
@@ -170,22 +99,22 @@ async function handleEnhanceRequest() {
   }
 
   setLoadingState(true);
-  showStatus(`SYNTHESIZING PROMPT VIA DEN-VULKAN HYPER ENGINE...`, "info");
+  showStatus(`CONTACTING N8N HYPER ENGINE PIPELINE...`, "info");
 
+  // Calibrated payload for website.json n8n workflow (Gemini node expects $json.body.message)
   const payload = {
+    message: promptText,
     prompt: promptText,
-    model: "hyper_engine",
-    mode: activeMode,
-    subject_ref: promptText
+    model: "hyper_engine"
   };
 
   try {
     let resultText = "";
 
     if (!webhookUrl) {
-      // Fallback demo execution tailored to selected mode
+      // Fallback demo execution matching website.json framework
       await new Promise(r => setTimeout(r, 450));
-      resultText = generateModeTailoredPrompt(promptText, activeMode);
+      resultText = generateStructuredFrameworkPrompt(promptText);
     } else {
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -200,7 +129,8 @@ async function handleEnhanceRequest() {
       const rawText = await response.text();
       try {
         const resJson = JSON.parse(rawText);
-        resultText = resJson.enhanced_prompt || resJson.output || resJson.text || rawText;
+        // Extracts enhanced_prompt returned from n8n Respond to Website node
+        resultText = resJson.enhanced_prompt || resJson.output || resJson.text || resJson.content?.parts[0]?.text || rawText;
       } catch (e) {
         resultText = rawText;
       }
@@ -213,7 +143,7 @@ async function handleEnhanceRequest() {
   } catch (err) {
     console.warn("n8n Webhook connection failed, using fallback generator:", err);
     showStatus(`WEBHOOK NOTICE: ${err.message}. DEMO OUTPUT GENERATED BELOW.`, "error");
-    const demoPrompt = generateModeTailoredPrompt(promptText, activeMode);
+    const demoPrompt = generateStructuredFrameworkPrompt(promptText);
     lastGeneratedMasterPrompt = demoPrompt;
     renderMasterPromptCard(demoPrompt);
   } finally {
@@ -230,17 +160,17 @@ function renderMasterPromptCard(promptText) {
 
   const wordCount = promptText ? promptText.trim().split(/\s+/).length : 0;
   const charCount = promptText ? promptText.length : 0;
-  const modeLabel = activeMode === "xml_master" ? "MASTER XML" : activeMode === "system_role" ? "SYSTEM ROLE" : "FEW-SHOT PROTOCOL";
 
   const card = document.createElement("div");
   card.className = "result-card";
   card.innerHTML = `
     <div class="result-card-header">
       <div class="result-title-group">
-        <i class="fa-solid fa-bolt" style="color: #00f2fe;"></i>
-        <span>DEN-VULKAN MASTER PROMPT</span>
-        <span class="badge-mode">${modeLabel}</span>
+        <i class="fa-solid fa-code" style="color: #38bdf8;"></i>
+        <span>HYPER ENGINE MASTER PROMPT</span>
+        <span class="badge-tag">PRODUCTION-READY</span>
       </div>
+      <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>COPY PROMPT</span></button>
     </div>
 
     <div class="prompt-body">
@@ -249,110 +179,63 @@ function renderMasterPromptCard(promptText) {
 
     <div class="result-footer-stats">
       <span>METRICS: ${charCount} CHARS | ${wordCount} WORDS</span>
-      <span>COMPATIBLE WITH ALL LLMS</span>
+      <span>N8N MODEL: GEMINI 1.5/3.5 FLASH</span>
     </div>
   `;
 
+  bindCopyButton(card, promptText);
   resultsGridEl.appendChild(card);
-
-  // Enable copy and download buttons
-  if (copyPromptBtn) copyPromptBtn.disabled = false;
-  if (downloadPromptBtn) downloadPromptBtn.disabled = false;
 }
 
-function copyMasterPromptToClipboard() {
-  if (!lastGeneratedMasterPrompt) return;
-
-  navigator.clipboard.writeText(lastGeneratedMasterPrompt).then(() => {
-    const originalHtml = copyPromptBtn.innerHTML;
-    copyPromptBtn.innerHTML = `<i class="fa-solid fa-check"></i> COPIED!`;
-    setTimeout(() => { copyPromptBtn.innerHTML = originalHtml; }, 2000);
-  });
-}
-
-function downloadMasterPromptFile() {
-  if (!lastGeneratedMasterPrompt) return;
-
-  const blob = new Blob([lastGeneratedMasterPrompt], { type: "text/markdown;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `DEN-VULKAN-MASTER-PROMPT-${Date.now()}.md`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+function bindCopyButton(card, textToCopy) {
+  const copyBtn = card.querySelector(".copy-btn");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const originalHtml = copyBtn.innerHTML;
+        copyBtn.innerHTML = `<i class="fa-solid fa-check"></i> COPIED!`;
+        setTimeout(() => { copyBtn.innerHTML = originalHtml; }, 2000);
+      });
+    });
+  }
 }
 
 /* ==========================================================================
-   MODE TAILORED DEMO PROMPT GENERATOR
+   STRUCTURED PROMPT FRAMEWORK GENERATOR (MATCHING WEBSITE.JSON SPECIFICATION)
    ========================================================================== */
-function generateModeTailoredPrompt(humanPrompt, mode) {
-  if (mode === "system_role") {
-    return `SYSTEM INSTRUCTIONS:
-You are an expert Production Systems Engineer & Senior Solution Architect.
+function generateStructuredFrameworkPrompt(humanPrompt) {
+  return `<role_and_objective>
+You are an expert Senior Software Architect, Systems Engineer, and Production Code Specialist.
+Your primary objective is to execute the following task with 100% precision: "${humanPrompt}".
+Define a clear, specialized expert persona and deliver complete, production-grade output without placeholders.
+</role_and_objective>
 
-PRIMARY ROLE & RESPONSIBILITIES:
-- Execute task: "${humanPrompt}" with 100% precision.
-- Enforce strict typing, zero placeholder logic, and comprehensive exception handling.
-- Structure code modules cleanly with explicit inline documentation.
+<context_and_background>
+- Target Environment: Enterprise Production System / Cloud Services
+- Task Domain: Technical implementation of user request: "${humanPrompt}"
+- Target Models: Designed for high-performance execution in ChatGPT-4o, Gemini 1.5/3.5 Flash, Claude 3.5 Sonnet, and Llama 3.3.
+</context_and_background>
 
-EXECUTION PROTOCOL:
-1. Analyze objective requirements and potential failure modes.
-2. Produce production-ready implementation without omitting any logic.
-3. Validate performance and compatibility.`;
-  }
-
-  if (mode === "few_shot") {
-    return `# TASK: ${humanPrompt}
-
-## EXAMPLES:
-[Example Input 1]: Automated web scraper request
-[Example Output 1]: Modular Python script using Playwright + BeautifulSoup with retry decorators.
-
-[Example Input 2]: Data transformation pipeline
-[Example Output 2]: Strict BigQuery SQL CTE query with window metrics.
-
-## YOUR TASK:
-Provide a complete, production-ready solution for "${humanPrompt}" adhering strictly to the architectural standards shown above.`;
-  }
-
-  // Default: Master XML Structure
-  return `<role>
-You are an elite Senior Software Architect, Systems Engineer, and Production Code Specialist.
-You possess deep expertise in writing robust, scalable, self-documenting code with comprehensive error handling and optimal performance.
-</role>
-
-<objective>
-Analyze the human prompt objective: "${humanPrompt}".
-Synthesize a complete, production-ready solution that fulfills all functional, architectural, and operational requirements without truncation or placeholder logic.
-</objective>
-
-<context>
-- Target Environment: Production Cloud / Local Operating System
-- Operating Constraints: Strict typing, zero unhandled exception paths, clean code architecture, and modular function design.
-- Target LLMs: Designed for optimal execution in ChatGPT-4o, Gemini 1.5 Pro, Claude 3.5 Sonnet, DeepSeek V3, and Llama 3.3.
-</context>
-
-<execution_steps>
-1. Analyze the core functional requirements and edge cases inherent in the raw human prompt.
-2. Outline the step-by-step modular code structure and data schemas required.
-3. Implement the complete, clean, production-grade source code with explicit type annotations and docstrings.
-4. Include explicit error handling, input validation, and graceful failure fallbacks.
+<step_by_step_instructions>
+1. Analyze the core functional requirements and edge cases inherent in the raw human input prompt.
+2. Formulate a modular, step-by-step implementation architecture.
+3. Implement complete, clean, self-documenting code with explicit type hints and docstrings.
+4. Add robust input validation and explicit exception handling for all failure paths.
 5. Provide clear verification instructions and unit test guidelines.
-</execution_steps>
+</step_by_step_instructions>
+
+<constraints_and_boundaries>
+- DO NOT use pseudocode or incomplete placeholders (e.g. "// TODO: implement later").
+- DO NOT summarize or truncate implementation logic.
+- DO NOT add conversational filler or unnecessary commentary.
+- MUST enforce strict typing and explicit exception paths.
+</constraints_and_boundaries>
 
 <output_format>
-- Structure response in clean GitHub-Flavored Markdown.
-- Enclose all code in fenced code blocks with language identifiers.
-- Maintain professional, precise technical documentation style.
-</output_format>
-
-<negative_constraints>
-- DO NOT use pseudocode or incomplete placeholders (e.g. "// TODO: implement later").
-- DO NOT summarize or skip implementation steps.
-- DO NOT introduce unverified third-party dependencies without explicit justification.
-</negative_constraints>`;
+- Format response strictly in clean GitHub-Flavored Markdown.
+- Enclose all code within fenced code blocks with language identifiers.
+- Structure sections using clear, clean Markdown headings.
+</output_format>`;
 }
 
 /* ==========================================================================
@@ -396,13 +279,13 @@ async function testWebhookConnection() {
     return;
   }
 
-  if (testResultEl) testResultEl.innerHTML = `<span style="color:#00f2fe;"><i class="fa-solid fa-spinner fa-spin"></i> TESTING CONNECTION...</span>`;
+  if (testResultEl) testResultEl.innerHTML = `<span style="color:#38bdf8;"><i class="fa-solid fa-spinner fa-spin"></i> TESTING CONNECTION...</span>`;
 
   try {
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: "Connection Test", model: "hyper_engine" })
+      body: JSON.stringify({ message: "Connection Test", prompt: "Connection Test" })
     });
 
     if (res.ok) {
