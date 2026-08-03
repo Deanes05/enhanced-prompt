@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DEN-VULKAN PROMPT ENHANCER</title>
-  <meta name="description" content="DEN-VULKAN Tactical Interface for Human Prompt Architecture.">
+  <title>OBSIDIAN // DEN-VULKAN PROMPT ARCHITECT</title>
+  <meta name="description" content="OBSIDIAN Sci-Fi Space Glassmorphism Interface for High-Performance Human Prompt Architecture.">
 
-  <!-- Google Fonts: Share Tech Mono & VT323 -->
+  <!-- Google Fonts: Inter, Outfit & Share Tech Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,133 +19,133 @@
 </head>
 
 <body>
-  <!-- Terminal Main Window Container -->
-  <div class="terminal-frame">
+  <!-- Space Cosmos Ambient Background -->
+  <div id="space-bg" class="space-background">
+    <div class="stars-layer"></div>
+    <div class="nebula-glow"></div>
+  </div>
 
-    <!-- Top Clean Header Bar -->
-    <header class="cyber-header">
-      <div class="cyber-header-top">
-        <h1 class="header-title"><i class="fa-solid fa-terminal"></i> DEN-VULKAN PROMPT ENHANCER</h1>
+  <!-- Corner Reticle Frame Wrapper (Matching OBSIDIAN Reference Image) -->
+  <div class="reticle-container">
+    <div class="reticle reticle-tl"></div>
+    <div class="reticle reticle-tr"></div>
+    <div class="reticle reticle-bl"></div>
+    <div class="reticle reticle-br"></div>
 
-        <div class="header-actions">
-          <button id="webhook-settings-btn" class="btn-icon" title="Configure n8n Webhook URL">
+    <!-- Main Glass Window Container -->
+    <div class="obsidian-frame glass-panel">
+
+      <!-- Top Header Bar -->
+      <header class="obsidian-header">
+        <div class="header-brand">
+          <span class="brand-title">OBSIDIAN</span>
+          <span class="brand-sub">PROMPT ARCHITECT // DEN-VULKAN</span>
+        </div>
+
+        <div class="header-right">
+          <span class="status-pill"><span id="webhook-indicator" class="status-dot"></span> SYSTEM ONLINE</span>
+          <button id="webhook-settings-btn" class="btn-glass-icon" title="Configure n8n Webhook URL">
             <i class="fa-solid fa-gear"></i>
-            <span id="webhook-indicator" class="status-dot"></span>
           </button>
+        </div>
+      </header>
+
+      <!-- Webhook Notice Banner if not configured -->
+      <div id="webhook-banner" class="webhook-banner hidden">
+        <div class="banner-content">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>SYS_NOTICE: RUNNING IN DEMO MODE. CONNECT YOUR N8N WEBHOOK URL FOR LIVE AI EXECUTION.</span>
+          <button id="banner-config-btn" class="btn-banner">[CONNECT WEBHOOK]</button>
         </div>
       </div>
 
-      <!-- Main Navigation Switcher (EXACTLY TWO VIEWS) -->
-      <nav class="cyber-nav-bar">
-        <div class="nav-tabs-group">
-          <button id="view-tab-prompt" class="cyber-tab active">
-            <i class="fa-solid fa-code"></i> [01 PROMPT ENGINE]
-          </button>
-          <button id="view-tab-history" class="cyber-tab">
-            <i class="fa-solid fa-clock-rotate-left"></i> [02 LOG HISTORY]
-          </button>
-        </div>
-      </nav>
-    </header>
+      <!-- Main Layout: Compact Dual Glass Panel Grid -->
+      <main class="obsidian-dual-grid">
+        <!-- Hidden Model Selector for State Compatibility -->
+        <select id="model-select" class="hidden">
+          <option value="hyper_engine" selected>hyper_engine</option>
+        </select>
 
-    <!-- Webhook Notice Banner if not configured -->
-    <div id="webhook-banner" class="webhook-banner hidden">
-      <div class="banner-content">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <span>SYS_NOTICE: RUNNING IN DEMO ENGINE MODE. CONNECT YOUR N8N WEBHOOK URL FOR LIVE AI EXECUTION.</span>
-        <button id="banner-config-btn" class="btn-banner">[CONNECT WEBHOOK]</button>
-      </div>
-    </div>
-
-    <main class="main-layout">
-      <!-- Hidden Model Selector for State Compatibility -->
-      <select id="model-select" class="hidden">
-        <option value="hyper_engine" selected>hyper_engine</option>
-      </select>
-
-      <!-- VIEW 1: PROMPT ENGINE CONTAINER -->
-      <div id="view-prompt-container" class="cyber-view-pane">
-        <!-- Dual Column Battledeck Grid -->
-        <div class="cyber-dual-grid">
-          <!-- Left Panel: Input Console & Control -->
-          <section class="cyber-card cyber-panel-left">
-            <div class="card-badge-header">
-              <span class="badge-title"><i class="fa-solid fa-sliders"></i> INPUT_STREAM_CONSOLE</span>
-            </div>
-
-            <div class="textarea-wrapper">
-              <span class="prompt-symbol">HUMAN_RAW_PROMPT_INPUT&gt;</span>
-              <textarea id="raw-prompt"
-                placeholder="TYPE RAW HUMAN PROMPT OR IDEA HERE (e.g. Write a python script for automated web scraping and data parsing)..."
-                rows="10" maxlength="3000"></textarea>
-              <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-
-            <div class="options-bar">
-              <button id="enhance-btn" class="btn-primary btn-generate">
-                <span class="btn-text">[RUN PROMPT ENHANCEMENT]</span>
-                <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> SYNTHESIZING_MASTER_PROMPT...</span>
-              </button>
-            </div>
-
-            <div id="status-bar" class="status-bar hidden"></div>
-          </section>
-
-          <!-- Right Panel: Output Buffer Monitor -->
-          <section class="cyber-card cyber-panel-right">
-            <div class="card-badge-header">
-              <span class="badge-title"><i class="fa-solid fa-shield-halved"></i> MASTER_OUTPUT_BUFFER</span>
-              <span class="comparison-tag" id="active-model-tag">STATUS: COMPLETE</span>
-            </div>
-
-            <div id="results-grid" class="results-grid">
-              <!-- Initial Placeholder State -->
-              <div class="empty-state card">
-                <div class="empty-icon"><i class="fa-solid fa-terminal"></i></div>
-                <h3>SYSTEM_READY: INPUT PROMPT AND CLICK EXECUTE</h3>
-                <p>Type your raw human prompt idea on the left console and click <strong>[RUN PROMPT ENHANCEMENT]</strong>.</p>
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
-
-      <!-- VIEW 2: LOG HISTORY CONTAINER (IN-PAGE MAIN VIEW) -->
-      <div id="view-history-container" class="cyber-view-pane hidden">
-        <section class="cyber-card full-history-card">
-          <div class="card-badge-header">
-            <span class="badge-title"><i class="fa-solid fa-clock-rotate-left"></i> LOG_HISTORY_BUFFER</span>
-            <button id="clear-history-btn" class="btn-secondary"><i class="fa-solid fa-trash-can"></i> [CLEAR LOG BUFFER]</button>
+        <!-- Left Glass Panel: Prompt Input Console -->
+        <section class="glass-card panel-input">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-terminal"></i> INPUT STREAM CONSOLE</h3>
+            <span class="header-code">RAW HUMAN PROMPT</span>
           </div>
 
-          <div id="history-list" class="history-grid-list">
-            <p class="history-empty">NO LOG HISTORY RECORDED.</p>
+          <div class="textarea-wrapper">
+            <span class="prompt-symbol">HUMAN_RAW_PROMPT_INPUT&gt;</span>
+            <textarea id="raw-prompt"
+              placeholder="TYPE RAW HUMAN PROMPT OR IDEA HERE (e.g. Write a python script for automated web scraping and data parsing)..."
+              rows="12" maxlength="3000"></textarea>
+            <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+
+          <div class="options-bar">
+            <button id="enhance-btn" class="btn-obsidian-primary">
+              <span class="btn-text">[LAUNCH PROMPT ENHANCEMENT]</span>
+              <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> SYNTHESIZING_MASTER_PROMPT...</span>
+            </button>
+          </div>
+
+          <div id="status-bar" class="status-bar hidden"></div>
+        </section>
+
+        <!-- Right Glass Panel: Master Output Buffer & 100% Working Compact History Feed -->
+        <section class="glass-card panel-output">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-code"></i> MASTER OUTPUT BUFFER</h3>
+            <span class="header-code" id="active-model-tag">ENGINE: READY</span>
+          </div>
+
+          <!-- Enhanced Prompt Output Container -->
+          <div id="results-grid" class="results-container">
+            <div class="empty-state">
+              <div class="empty-icon"><i class="fa-solid fa-microchip"></i></div>
+              <h3>SYSTEM READY</h3>
+              <p>Input your raw human prompt idea on the left console and click <strong>[LAUNCH PROMPT ENHANCEMENT]</strong>.</p>
+            </div>
+          </div>
+
+          <!-- Compact In-Line History Feed (100% Working) -->
+          <div class="compact-history-section">
+            <div class="history-section-header">
+              <h4><i class="fa-solid fa-clock-rotate-left"></i> RECENT PROMPT LOGS</h4>
+              <button id="clear-history-btn" class="btn-text-action"><i class="fa-solid fa-trash-can"></i> CLEAR LOGS</button>
+            </div>
+            <div id="compact-history-list" class="compact-history-list">
+              <p class="history-empty">NO PROMPT LOGS RECORDED YET.</p>
+            </div>
           </div>
         </section>
-      </div>
-    </main>
+      </main>
 
-    <footer class="app-footer">
-      <div class="footer-container">
-        <div class="footer-links">
+      <!-- Bottom Glass Footer Bar -->
+      <footer class="obsidian-footer">
+        <div class="footer-left">
+          <span>04:00:34</span>
+          <span>DEN-VULKAN PROMPT ARCHITECT V9.5</span>
+        </div>
+        <div class="footer-right">
           <a href="website.json" download><i class="fa-solid fa-download"></i> [DOWNLOAD_WORKFLOW_JSON]</a>
         </div>
-      </div>
-    </footer>
+      </footer>
+
+    </div>
   </div>
 
   <!-- Settings Modal for n8n Webhook -->
   <div id="settings-modal" class="modal">
-    <div class="modal-content card">
+    <div class="modal-content glass-card">
       <div class="modal-header">
-        <h3><i class="fa-solid fa-gear"></i> WEBHOOK_CONFIG_TERMINAL</h3>
-        <button id="close-modal-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+        <h3><i class="fa-solid fa-gear"></i> WEBHOOK CONFIGURATION</h3>
+        <button id="close-modal-btn" class="btn-glass-icon"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="modal-body">
         <p class="modal-desc">ENTER N8N PRODUCTION WEBHOOK ENDPOINT URL BELOW:</p>
 
         <div class="form-group">
-          <label for="webhook-url-input">N8N_WEBHOOK_ENDPOINT_URL</label>
+          <label for="webhook-url-input">N8N WEBHOOK ENDPOINT URL</label>
           <input type="url" id="webhook-url-input" placeholder="https://your-n8n-domain.com/webhook/enhance-promp"
             autocomplete="off">
         </div>
@@ -153,8 +153,8 @@
         <div id="webhook-test-result" class="test-result"></div>
       </div>
       <div class="modal-footer">
-        <button id="test-webhook-btn" class="btn-secondary"><i class="fa-solid fa-plug"></i> [TEST_CONNECTION]</button>
-        <button id="save-webhook-btn" class="btn-primary">[SAVE_CONFIGURATION]</button>
+        <button id="test-webhook-btn" class="btn-glass-secondary"><i class="fa-solid fa-plug"></i> [TEST CONNECTION]</button>
+        <button id="save-webhook-btn" class="btn-obsidian-primary">[SAVE CONFIGURATION]</button>
       </div>
     </div>
   </div>

@@ -1,9 +1,9 @@
 /* ==========================================================================
-   MICROCYBER BATTLEDECK V02 - APPLICATION LOGIC
+   OBSIDIAN // DEN-VULKAN PROMPT ARCHITECT - APPLICATION LOGIC
    ========================================================================== */
 
 const STORAGE_WEBHOOK_KEY = "prompt_enhancer_n8n_webhook";
-const STORAGE_HISTORY_KEY = "prompt_enhancer_history_v4";
+const STORAGE_HISTORY_KEY = "prompt_enhancer_history_v5";
 const DEFAULT_WEBHOOK_URL = "http://localhost:5678/webhook/enhance-promp";
 
 // DOM Elements
@@ -14,13 +14,7 @@ const statusBarEl = document.getElementById("status-bar");
 const resultsGridEl = document.getElementById("results-grid");
 const activeModelTagEl = document.getElementById("active-model-tag");
 
-// Navigation View Tabs (EXACTLY TWO VIEWS)
-const viewTabPrompt = document.getElementById("view-tab-prompt");
-const viewTabHistory = document.getElementById("view-tab-history");
-
-const viewPromptContainer = document.getElementById("view-prompt-container");
-const viewHistoryContainer = document.getElementById("view-history-container");
-const historyListEl = document.getElementById("history-list");
+const compactHistoryListEl = document.getElementById("compact-history-list");
 const clearHistoryBtn = document.getElementById("clear-history-btn");
 
 // Header & Modal Elements
@@ -44,7 +38,7 @@ let historyData = JSON.parse(localStorage.getItem(STORAGE_HISTORY_KEY) || "[]");
 document.addEventListener("DOMContentLoaded", () => {
   initWebhookState();
   initEventListeners();
-  initViewSwitcher();
+  renderCompactHistoryList();
 });
 
 function initWebhookState() {
@@ -55,31 +49,6 @@ function initWebhookState() {
   } else {
     webhookIndicatorEl.classList.add("offline");
     webhookBannerEl.classList.remove("hidden");
-  }
-}
-
-// Exactly 2 Main Navigation View Switcher
-function initViewSwitcher() {
-  if (viewTabPrompt) {
-    viewTabPrompt.addEventListener("click", () => {
-      viewTabPrompt.classList.add("active");
-      viewTabHistory.classList.remove("active");
-
-      viewPromptContainer.classList.remove("hidden");
-      viewHistoryContainer.classList.add("hidden");
-    });
-  }
-
-  if (viewTabHistory) {
-    viewTabHistory.addEventListener("click", () => {
-      viewTabHistory.classList.add("active");
-      viewTabPrompt.classList.remove("active");
-
-      viewPromptContainer.classList.add("hidden");
-      viewHistoryContainer.classList.remove("hidden");
-
-      renderInPageHistoryList();
-    });
   }
 }
 
@@ -118,7 +87,7 @@ function initEventListeners() {
     clearHistoryBtn.addEventListener("click", () => {
       historyData = [];
       localStorage.removeItem(STORAGE_HISTORY_KEY);
-      renderInPageHistoryList();
+      renderCompactHistoryList();
       showStatus("Log history buffer cleared.", "info");
     });
   }
@@ -128,12 +97,12 @@ async function handleEnhanceRequest() {
   const promptText = rawPromptInput ? rawPromptInput.value.trim() : "";
 
   if (!promptText) {
-    showStatus("PLEASE ENTER A RAW HUMAN PROMPT BEFORE EXECUTING BATTLEDECK PROMPT SYNTHESIS.", "error");
+    showStatus("PLEASE ENTER A RAW HUMAN PROMPT BEFORE EXECUTING PROMPT ENHANCEMENT.", "error");
     return;
   }
 
   setLoadingState(true);
-  showStatus(`CONTACTING BATTLEDECK PROMPT SYNTHESIZER PIPELINE...`, "info");
+  showStatus(`CONTACTING PROMPT ARCHITECT PIPELINE...`, "info");
 
   const payload = {
     prompt: promptText,
@@ -170,11 +139,12 @@ async function handleEnhanceRequest() {
 
     renderHyperMasterPromptCard(resultText);
     saveToHistory(promptText, resultText);
-    showStatus(`BATTLEDECK PROMPT SYNTHESIS COMPLETE. MASTER OUTPUT BUFFER UPDATED.`, "success");
+    renderCompactHistoryList();
+    showStatus(`PROMPT ENHANCEMENT COMPLETE. MASTER OUTPUT BUFFER UPDATED.`, "success");
 
   } catch (err) {
     console.warn("n8n Webhook connection failed, using fallback generator:", err);
-    showStatus(`WEBHOOK WARNING: ${err.message}. BATTLEDECK DEMO OUTPUT GENERATED BELOW.`, "error");
+    showStatus(`WEBHOOK WARNING: ${err.message}. DEMO OUTPUT GENERATED BELOW.`, "error");
     const demoPrompt = generateDemoHyperPrompt(promptText);
     renderHyperMasterPromptCard(demoPrompt);
   } finally {
@@ -194,7 +164,7 @@ function renderHyperMasterPromptCard(promptText) {
   card.innerHTML = `
     <div class="result-header">
       <div class="model-name">
-        <i class="fa-solid fa-code" style="color: #00ffaa;"></i>
+        <i class="fa-solid fa-code" style="color: #38bdf8;"></i>
         <span>DEN-VULKAN MASTER PROMPT</span>
         <span class="badge-text-only">PRODUCTION-READY LLM PROMPT</span>
       </div>
@@ -215,6 +185,7 @@ function renderHyperMasterPromptCard(promptText) {
 
   bindCopyButton(card, promptText);
   resultsGridEl.appendChild(card);
+  if (activeModelTagEl) activeModelTagEl.innerText = "ENGINE: COMPLETE";
 }
 
 function bindCopyButton(card, textToCopy) {
@@ -291,7 +262,7 @@ function showStatus(msg, type = "info") {
   statusBarEl.classList.remove("hidden");
 }
 
-// History Handling (In-Page View 2)
+// History Handling (100% Working Compact Feed)
 function saveToHistory(prompt, result) {
   const item = {
     id: Date.now(),
@@ -301,22 +272,22 @@ function saveToHistory(prompt, result) {
   };
 
   historyData.unshift(item);
-  if (historyData.length > 30) historyData.pop();
+  if (historyData.length > 20) historyData.pop();
   localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(historyData));
 }
 
-function renderInPageHistoryList() {
-  if (!historyListEl) return;
+function renderCompactHistoryList() {
+  if (!compactHistoryListEl) return;
 
   if (historyData.length === 0) {
-    historyListEl.innerHTML = `<p class="history-empty">NO LOG HISTORY RECORDED.</p>`;
+    compactHistoryListEl.innerHTML = `<p class="history-empty">NO PROMPT LOGS RECORDED YET.</p>`;
     return;
   }
 
-  historyListEl.innerHTML = historyData.map(item => `
+  compactHistoryListEl.innerHTML = historyData.map(item => `
     <div class="history-card-item" onclick="loadHistoryItem(${item.id})">
       <div class="history-item-header">
-        <span>LOG ID: #${item.id}</span>
+        <span>LOG #${item.id}</span>
         <span>TIME: [${escapeHtml(item.timestamp)}]</span>
       </div>
       <div class="history-item-prompt">PROMPT: "${escapeHtml(item.prompt)}"</div>
@@ -327,8 +298,7 @@ function renderInPageHistoryList() {
 window.loadHistoryItem = function (id) {
   const found = historyData.find(h => h.id === id);
   if (found) {
-    // Switch to view 1 prompt engine and render the result
-    if (viewTabPrompt) viewTabPrompt.click();
+    if (rawPromptInput) rawPromptInput.value = found.prompt;
     renderHyperMasterPromptCard(found.result);
     showStatus(`LOADED LOG HISTORY ITEM #${found.id} [${found.timestamp}]`, "info");
   }
@@ -351,7 +321,7 @@ async function testWebhookConnection() {
     return;
   }
 
-  testResultEl.innerHTML = `<span style="color:#00ffaa;"><i class="fa-solid fa-spinner fa-spin"></i> TESTING CONNECTION...</span>`;
+  testResultEl.innerHTML = `<span style="color:#38bdf8;"><i class="fa-solid fa-spinner fa-spin"></i> TESTING CONNECTION...</span>`;
 
   try {
     const res = await fetch(url, {
@@ -361,7 +331,7 @@ async function testWebhookConnection() {
     });
 
     if (res.ok) {
-      testResultEl.innerHTML = `<span style="color:#00ff66;"><i class="fa-solid fa-check"></i> CONNECTION SUCCESSFUL! HTTP ${res.status}</span>`;
+      testResultEl.innerHTML = `<span style="color:#10b981;"><i class="fa-solid fa-check"></i> CONNECTION SUCCESSFUL! HTTP ${res.status}</span>`;
     } else {
       testResultEl.innerHTML = `<span style="color:#f43f5e;"><i class="fa-solid fa-xmark"></i> CONNECTION FAILED: HTTP ${res.status}</span>`;
     }
