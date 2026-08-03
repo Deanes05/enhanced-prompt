@@ -1,9 +1,8 @@
 /* ==========================================================================
-   OBSIDIAN // DEN-VULKAN PROMPT ARCHITECT - APPLICATION LOGIC
+   DEN-VULKAN PROMPT ARCHITECT - ULTRA-FAST MINIMALIST APPLICATION LOGIC
    ========================================================================== */
 
 const STORAGE_WEBHOOK_KEY = "prompt_enhancer_n8n_webhook";
-const STORAGE_HISTORY_KEY = "prompt_enhancer_history_v5";
 const DEFAULT_WEBHOOK_URL = "http://localhost:5678/webhook/enhance-promp";
 
 // DOM Elements
@@ -12,10 +11,6 @@ const rawPromptInput = document.getElementById("raw-prompt");
 const clearPromptBtn = document.getElementById("clear-prompt-btn");
 const statusBarEl = document.getElementById("status-bar");
 const resultsGridEl = document.getElementById("results-grid");
-const activeModelTagEl = document.getElementById("active-model-tag");
-
-const compactHistoryListEl = document.getElementById("compact-history-list");
-const clearHistoryBtn = document.getElementById("clear-history-btn");
 
 // Header & Modal Elements
 const webhookSettingsBtn = document.getElementById("webhook-settings-btn");
@@ -32,13 +27,11 @@ const testResultEl = document.getElementById("webhook-test-result");
 
 // App State
 let webhookUrl = localStorage.getItem(STORAGE_WEBHOOK_KEY) || DEFAULT_WEBHOOK_URL;
-let historyData = JSON.parse(localStorage.getItem(STORAGE_HISTORY_KEY) || "[]");
 
 // Initialize App
 document.addEventListener("DOMContentLoaded", () => {
   initWebhookState();
   initEventListeners();
-  renderCompactHistoryList();
 });
 
 function initWebhookState() {
@@ -81,15 +74,6 @@ function initEventListeners() {
 
   if (testWebhookBtn) {
     testWebhookBtn.addEventListener("click", testWebhookConnection);
-  }
-
-  if (clearHistoryBtn) {
-    clearHistoryBtn.addEventListener("click", () => {
-      historyData = [];
-      localStorage.removeItem(STORAGE_HISTORY_KEY);
-      renderCompactHistoryList();
-      showStatus("Log history buffer cleared.", "info");
-    });
   }
 }
 
@@ -138,8 +122,6 @@ async function handleEnhanceRequest() {
     }
 
     renderHyperMasterPromptCard(resultText);
-    saveToHistory(promptText, resultText);
-    renderCompactHistoryList();
     showStatus(`PROMPT ENHANCEMENT COMPLETE. MASTER OUTPUT BUFFER UPDATED.`, "success");
 
   } catch (err) {
@@ -185,7 +167,6 @@ function renderHyperMasterPromptCard(promptText) {
 
   bindCopyButton(card, promptText);
   resultsGridEl.appendChild(card);
-  if (activeModelTagEl) activeModelTagEl.innerText = "ENGINE: COMPLETE";
 }
 
 function bindCopyButton(card, textToCopy) {
@@ -261,48 +242,6 @@ function showStatus(msg, type = "info") {
   statusBarEl.innerText = msg;
   statusBarEl.classList.remove("hidden");
 }
-
-// History Handling (100% Working Compact Feed)
-function saveToHistory(prompt, result) {
-  const item = {
-    id: Date.now(),
-    timestamp: new Date().toLocaleTimeString(),
-    prompt,
-    result
-  };
-
-  historyData.unshift(item);
-  if (historyData.length > 20) historyData.pop();
-  localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(historyData));
-}
-
-function renderCompactHistoryList() {
-  if (!compactHistoryListEl) return;
-
-  if (historyData.length === 0) {
-    compactHistoryListEl.innerHTML = `<p class="history-empty">NO PROMPT LOGS RECORDED YET.</p>`;
-    return;
-  }
-
-  compactHistoryListEl.innerHTML = historyData.map(item => `
-    <div class="history-card-item" onclick="loadHistoryItem(${item.id})">
-      <div class="history-item-header">
-        <span>LOG #${item.id}</span>
-        <span>TIME: [${escapeHtml(item.timestamp)}]</span>
-      </div>
-      <div class="history-item-prompt">PROMPT: "${escapeHtml(item.prompt)}"</div>
-    </div>
-  `).join("");
-}
-
-window.loadHistoryItem = function (id) {
-  const found = historyData.find(h => h.id === id);
-  if (found) {
-    if (rawPromptInput) rawPromptInput.value = found.prompt;
-    renderHyperMasterPromptCard(found.result);
-    showStatus(`LOADED LOG HISTORY ITEM #${found.id} [${found.timestamp}]`, "info");
-  }
-};
 
 // Modal Handling
 function openModal() {

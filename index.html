@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OBSIDIAN // DEN-VULKAN PROMPT ARCHITECT</title>
-  <meta name="description" content="OBSIDIAN Sci-Fi Space Glassmorphism Interface for High-Performance Human Prompt Architecture.">
+  <title>DEN-VULKAN PROMPT ARCHITECT</title>
+  <meta name="description" content="Minimalist Glassmorphism Interface for High-Performance Human Prompt Architecture.">
 
-  <!-- Google Fonts: Inter, Outfit & Share Tech Mono -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,119 +19,82 @@
 </head>
 
 <body>
-  <!-- Space Cosmos Ambient Background -->
-  <div id="space-bg" class="space-background">
-    <div class="stars-layer"></div>
-    <div class="nebula-glow"></div>
-  </div>
+  <!-- Ambient Space Glass Background -->
+  <div class="space-background"></div>
 
-  <!-- Corner Reticle Frame Wrapper (Matching OBSIDIAN Reference Image) -->
-  <div class="reticle-container">
-    <div class="reticle reticle-tl"></div>
-    <div class="reticle reticle-tr"></div>
-    <div class="reticle reticle-bl"></div>
-    <div class="reticle reticle-br"></div>
+  <!-- Main Glass Container Frame -->
+  <div class="terminal-frame glass-panel">
 
-    <!-- Main Glass Window Container -->
-    <div class="obsidian-frame glass-panel">
+    <!-- Clean Header Bar -->
+    <header class="clean-header">
+      <h1 class="brand-title"><i class="fa-solid fa-code"></i> DEN-VULKAN PROMPT ARCHITECT</h1>
 
-      <!-- Top Header Bar -->
-      <header class="obsidian-header">
-        <div class="header-brand">
-          <span class="brand-title">OBSIDIAN</span>
-          <span class="brand-sub">PROMPT ARCHITECT // DEN-VULKAN</span>
+      <div class="header-right">
+        <span class="status-pill"><span id="webhook-indicator" class="status-dot"></span> ONLINE</span>
+        <button id="webhook-settings-btn" class="btn-glass-icon" title="Configure n8n Webhook URL">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Webhook Notice Banner if not configured -->
+    <div id="webhook-banner" class="webhook-banner hidden">
+      <div class="banner-content">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>SYS_NOTICE: RUNNING IN DEMO MODE. CONNECT YOUR N8N WEBHOOK URL FOR LIVE AI EXECUTION.</span>
+        <button id="banner-config-btn" class="btn-banner">[CONNECT WEBHOOK]</button>
+      </div>
+    </div>
+
+    <!-- Main Layout: Clean 2-Column Glass Grid -->
+    <main class="clean-dual-grid">
+      <!-- Left Glass Panel: Prompt Input Console -->
+      <section class="glass-card panel-input">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-terminal"></i> HUMAN PROMPT INPUT</h3>
         </div>
 
-        <div class="header-right">
-          <span class="status-pill"><span id="webhook-indicator" class="status-dot"></span> SYSTEM ONLINE</span>
-          <button id="webhook-settings-btn" class="btn-glass-icon" title="Configure n8n Webhook URL">
-            <i class="fa-solid fa-gear"></i>
+        <div class="textarea-wrapper">
+          <textarea id="raw-prompt"
+            placeholder="TYPE RAW HUMAN PROMPT OR IDEA HERE (e.g. Write a python script for automated web scraping and data parsing)..."
+            rows="12" maxlength="3000"></textarea>
+          <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="options-bar">
+          <button id="enhance-btn" class="btn-obsidian-primary">
+            <span class="btn-text">[ENHANCE PROMPT]</span>
+            <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> ENHANCING_PROMPT...</span>
           </button>
         </div>
-      </header>
 
-      <!-- Webhook Notice Banner if not configured -->
-      <div id="webhook-banner" class="webhook-banner hidden">
-        <div class="banner-content">
-          <i class="fa-solid fa-triangle-exclamation"></i>
-          <span>SYS_NOTICE: RUNNING IN DEMO MODE. CONNECT YOUR N8N WEBHOOK URL FOR LIVE AI EXECUTION.</span>
-          <button id="banner-config-btn" class="btn-banner">[CONNECT WEBHOOK]</button>
+        <div id="status-bar" class="status-bar hidden"></div>
+      </section>
+
+      <!-- Right Glass Panel: Master Output Buffer -->
+      <section class="glass-card panel-output">
+        <div class="card-header">
+          <h3><i class="fa-solid fa-shield-halved"></i> MASTER PROMPT OUTPUT</h3>
         </div>
+
+        <!-- Enhanced Prompt Output Container -->
+        <div id="results-grid" class="results-container">
+          <div class="empty-state">
+            <div class="empty-icon"><i class="fa-solid fa-code"></i></div>
+            <h3>SYSTEM READY</h3>
+            <p>Input your raw human prompt idea on the left console and click <strong>[ENHANCE PROMPT]</strong>.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Footer Bar -->
+    <footer class="clean-footer">
+      <div class="footer-links">
+        <a href="website.json" download><i class="fa-solid fa-download"></i> [DOWNLOAD_WORKFLOW_JSON]</a>
       </div>
+    </footer>
 
-      <!-- Main Layout: Compact Dual Glass Panel Grid -->
-      <main class="obsidian-dual-grid">
-        <!-- Hidden Model Selector for State Compatibility -->
-        <select id="model-select" class="hidden">
-          <option value="hyper_engine" selected>hyper_engine</option>
-        </select>
-
-        <!-- Left Glass Panel: Prompt Input Console -->
-        <section class="glass-card panel-input">
-          <div class="card-header">
-            <h3><i class="fa-solid fa-terminal"></i> INPUT STREAM CONSOLE</h3>
-            <span class="header-code">RAW HUMAN PROMPT</span>
-          </div>
-
-          <div class="textarea-wrapper">
-            <span class="prompt-symbol">HUMAN_RAW_PROMPT_INPUT&gt;</span>
-            <textarea id="raw-prompt"
-              placeholder="TYPE RAW HUMAN PROMPT OR IDEA HERE (e.g. Write a python script for automated web scraping and data parsing)..."
-              rows="12" maxlength="3000"></textarea>
-            <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-
-          <div class="options-bar">
-            <button id="enhance-btn" class="btn-obsidian-primary">
-              <span class="btn-text">[LAUNCH PROMPT ENHANCEMENT]</span>
-              <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> SYNTHESIZING_MASTER_PROMPT...</span>
-            </button>
-          </div>
-
-          <div id="status-bar" class="status-bar hidden"></div>
-        </section>
-
-        <!-- Right Glass Panel: Master Output Buffer & 100% Working Compact History Feed -->
-        <section class="glass-card panel-output">
-          <div class="card-header">
-            <h3><i class="fa-solid fa-code"></i> MASTER OUTPUT BUFFER</h3>
-            <span class="header-code" id="active-model-tag">ENGINE: READY</span>
-          </div>
-
-          <!-- Enhanced Prompt Output Container -->
-          <div id="results-grid" class="results-container">
-            <div class="empty-state">
-              <div class="empty-icon"><i class="fa-solid fa-microchip"></i></div>
-              <h3>SYSTEM READY</h3>
-              <p>Input your raw human prompt idea on the left console and click <strong>[LAUNCH PROMPT ENHANCEMENT]</strong>.</p>
-            </div>
-          </div>
-
-          <!-- Compact In-Line History Feed (100% Working) -->
-          <div class="compact-history-section">
-            <div class="history-section-header">
-              <h4><i class="fa-solid fa-clock-rotate-left"></i> RECENT PROMPT LOGS</h4>
-              <button id="clear-history-btn" class="btn-text-action"><i class="fa-solid fa-trash-can"></i> CLEAR LOGS</button>
-            </div>
-            <div id="compact-history-list" class="compact-history-list">
-              <p class="history-empty">NO PROMPT LOGS RECORDED YET.</p>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <!-- Bottom Glass Footer Bar -->
-      <footer class="obsidian-footer">
-        <div class="footer-left">
-          <span>04:00:34</span>
-          <span>DEN-VULKAN PROMPT ARCHITECT V9.5</span>
-        </div>
-        <div class="footer-right">
-          <a href="website.json" download><i class="fa-solid fa-download"></i> [DOWNLOAD_WORKFLOW_JSON]</a>
-        </div>
-      </footer>
-
-    </div>
   </div>
 
   <!-- Settings Modal for n8n Webhook -->
