@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MICROCYBER BATTLEDECK V02 - TACTICAL EMERALD GREEN HUD DESIGN SYSTEM
+   DEN-VULKAN PROMPT ENHANCER - TACTICAL EMERALD GREEN DESIGN SYSTEM
    ========================================================================== */
 
 /* Google Fonts Import */
@@ -35,28 +35,7 @@ body {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  text-shadow: 0 0 5px rgba(0, 255, 102, 0.7);
-}
-
-/* CRT Screen Scanline Overlay */
-.crt-scanlines {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(
-    rgba(0, 20, 10, 0) 50%, 
-    rgba(0, 0, 0, 0.45) 50%
-  ), linear-gradient(
-    90deg,
-    rgba(0, 255, 102, 0.03),
-    rgba(0, 0, 0, 0.03),
-    rgba(0, 255, 102, 0.03)
-  );
-  background-size: 100% 3px, 6px 100%;
-  pointer-events: none;
-  z-index: 999;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Main Terminal Container Frame */
@@ -71,7 +50,7 @@ body {
   display: none !important;
 }
 
-/* Top Microcyber Barcode Header */
+/* Top Clean Header */
 .cyber-header {
   border: 2px solid var(--crt-green);
   background: var(--crt-bg-card);
@@ -79,44 +58,30 @@ body {
   clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
 }
 
-.cyber-barcode-line {
+.cyber-header-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.45rem 1rem;
+  padding: 0.6rem 1.25rem;
   border-bottom: 1px solid var(--crt-green-dim);
   background: rgba(0, 255, 102, 0.06);
-  font-size: 0.88rem;
-  font-weight: bold;
 }
 
-.barcode-title {
+.header-title {
   color: var(--crt-green-bright);
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.6rem;
   letter-spacing: 2px;
-}
-
-.barcode-stats {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  font-size: 0.82rem;
-}
-
-.scan-status {
-  background: var(--crt-green);
-  color: var(--crt-black);
-  padding: 0.15rem 0.6rem;
-  font-weight: bold;
-  text-shadow: none;
+  gap: 0.6rem;
 }
 
 .cyber-nav-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.4rem 1rem;
+  padding: 0.4rem 1.25rem;
 }
 
 /* Main Navigation Switcher Tabs (EXACTLY TWO VIEWS) */
@@ -129,7 +94,7 @@ body {
   background: var(--crt-bg);
   border: 2px solid var(--crt-green);
   color: var(--crt-green);
-  padding: 0.6rem 1.4rem;
+  padding: 0.55rem 1.4rem;
   font-family: var(--font-mono);
   font-size: 0.95rem;
   font-weight: bold;
@@ -149,8 +114,7 @@ body {
   background: var(--crt-green) !important;
   color: var(--crt-black) !important;
   border-color: var(--crt-green) !important;
-  text-shadow: none !important;
-  box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
+  font-weight: bold;
 }
 
 .header-actions {
@@ -179,7 +143,6 @@ body {
 .btn-icon:hover, .btn-secondary:hover {
   background: var(--crt-green);
   color: var(--crt-black);
-  text-shadow: none;
 }
 
 .status-dot {
@@ -265,22 +228,11 @@ body {
   color: var(--crt-green-bright);
 }
 
-.badge-code, .comparison-tag {
+.comparison-tag {
   font-size: 0.76rem;
   border: 1px solid var(--crt-green);
   padding: 0.15rem 0.5rem;
   background: rgba(0, 255, 102, 0.1);
-}
-
-.binary-decor-box {
-  border: 1px dashed var(--crt-green-dim);
-  padding: 0.35rem 0.5rem;
-  background: var(--crt-bg);
-  font-size: 0.72rem;
-  color: var(--crt-green-dim);
-  letter-spacing: 1px;
-  overflow: hidden;
-  white-space: nowrap;
 }
 
 .textarea-wrapper {
@@ -309,7 +261,6 @@ textarea#raw-prompt {
   font-size: 0.95rem;
   outline: none;
   resize: vertical;
-  text-shadow: 0 0 5px rgba(0, 255, 102, 0.7);
   min-height: 220px;
 }
 
@@ -339,14 +290,13 @@ textarea#raw-prompt::placeholder {
   font-weight: bold;
   cursor: pointer;
   transition: all 0.15s ease;
-  text-shadow: none;
   width: 100%;
   clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
 }
 
 .btn-primary:hover {
   background: var(--crt-green-bright);
-  box-shadow: 0 0 18px rgba(0, 255, 170, 0.8);
+  box-shadow: 0 0 14px rgba(0, 255, 170, 0.6);
 }
 
 .status-bar {
@@ -402,7 +352,6 @@ textarea#raw-prompt::placeholder {
   padding: 0 0.35rem;
   font-size: 0.72rem;
   font-weight: bold;
-  text-shadow: none;
 }
 
 .copy-btn {
@@ -419,7 +368,6 @@ textarea#raw-prompt::placeholder {
 .copy-btn:hover {
   background: var(--crt-green);
   color: var(--crt-black);
-  text-shadow: none;
 }
 
 .prompt-output {
@@ -484,11 +432,11 @@ textarea#raw-prompt::placeholder {
   font-size: 0.88rem;
 }
 
-/* Footer */
+/* Footer (Clean single line) */
 .app-footer {
   border: 2px solid var(--crt-green);
   background: var(--crt-bg-card);
-  padding: 0.75rem 1.25rem;
+  padding: 0.65rem 1.25rem;
   margin-top: 0.85rem;
   font-size: 0.8rem;
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
@@ -497,7 +445,7 @@ textarea#raw-prompt::placeholder {
 .footer-container {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .footer-links a {

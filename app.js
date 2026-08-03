@@ -194,8 +194,8 @@ function renderHyperMasterPromptCard(promptText) {
   card.innerHTML = `
     <div class="result-header">
       <div class="model-name">
-        <i class="fa-solid fa-bolt" style="color: #00ffaa;"></i>
-        <span>BATTLEDECK MASTER PROMPT</span>
+        <i class="fa-solid fa-code" style="color: #00ffaa;"></i>
+        <span>DEN-VULKAN MASTER PROMPT</span>
         <span class="badge-text-only">PRODUCTION-READY LLM PROMPT</span>
       </div>
       <div class="result-actions">

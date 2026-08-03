@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MICROCYBER BATTLEDECK V02 | DEN-VULKAN PROMPT ARCHITECT</title>
-  <meta name="description" content="Microcyber Battledeck V02 Tactical Emerald Green Interface for Human Prompt Architecture.">
+  <title>DEN-VULKAN PROMPT ENHANCER</title>
+  <meta name="description" content="DEN-VULKAN Tactical Interface for Human Prompt Architecture.">
 
   <!-- Google Fonts: Share Tech Mono & VT323 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,21 +19,19 @@
 </head>
 
 <body>
-  <!-- CRT Screen Scanline Overlay -->
-  <div class="crt-scanlines"></div>
-
   <!-- Terminal Main Window Container -->
   <div class="terminal-frame">
 
-    <!-- Top Microcyber Barcode Header -->
+    <!-- Top Clean Header Bar -->
     <header class="cyber-header">
-      <div class="cyber-barcode-line">
-        <div class="barcode-title">
-          <i class="fa-solid fa-microchip"></i> 05 KILO MICROCYBER BATTLEDECK V02 // DEN-VULKAN PROMPT ARCHITECT
-        </div>
-        <div class="barcode-stats">
-          <span class="scan-status">SCANNING 100%</span>
-          <span class="file-count">1440 / 1440 FILES</span>
+      <div class="cyber-header-top">
+        <h1 class="header-title"><i class="fa-solid fa-terminal"></i> DEN-VULKAN PROMPT ENHANCER</h1>
+
+        <div class="header-actions">
+          <button id="webhook-settings-btn" class="btn-icon" title="Configure n8n Webhook URL">
+            <i class="fa-solid fa-gear"></i>
+            <span id="webhook-indicator" class="status-dot"></span>
+          </button>
         </div>
       </div>
 
@@ -41,17 +39,10 @@
       <nav class="cyber-nav-bar">
         <div class="nav-tabs-group">
           <button id="view-tab-prompt" class="cyber-tab active">
-            <i class="fa-solid fa-terminal"></i> [01 PROMPT ENGINE]
+            <i class="fa-solid fa-code"></i> [01 PROMPT ENGINE]
           </button>
           <button id="view-tab-history" class="cyber-tab">
             <i class="fa-solid fa-clock-rotate-left"></i> [02 LOG HISTORY]
-          </button>
-        </div>
-
-        <div class="header-actions">
-          <button id="webhook-settings-btn" class="btn-icon" title="Configure n8n Webhook URL">
-            <i class="fa-solid fa-gear"></i>
-            <span id="webhook-indicator" class="status-dot"></span>
           </button>
         </div>
       </nav>
@@ -79,12 +70,7 @@
           <!-- Left Panel: Input Console & Control -->
           <section class="cyber-card cyber-panel-left">
             <div class="card-badge-header">
-              <span class="badge-title"><i class="fa-solid fa-satellite-dish"></i> INPUT_STREAM_CONSOLE</span>
-              <span class="badge-code">SOCKET_SYS_014008</span>
-            </div>
-
-            <div class="binary-decor-box">
-              <span>01010011 01000001 01001101 01010101 01010010 01000001 01001001</span>
+              <span class="badge-title"><i class="fa-solid fa-sliders"></i> INPUT_STREAM_CONSOLE</span>
             </div>
 
             <div class="textarea-wrapper">
@@ -97,7 +83,7 @@
 
             <div class="options-bar">
               <button id="enhance-btn" class="btn-primary btn-generate">
-                <span class="btn-text">⚡ [RUN BATTLEDECK PROMPT SYNTHESIS]</span>
+                <span class="btn-text">[RUN PROMPT ENHANCEMENT]</span>
                 <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> SYNTHESIZING_MASTER_PROMPT...</span>
               </button>
             </div>
@@ -116,8 +102,8 @@
               <!-- Initial Placeholder State -->
               <div class="empty-state card">
                 <div class="empty-icon"><i class="fa-solid fa-terminal"></i></div>
-                <h3>BATTLEDECK_READY: INPUT PROMPT AND CLICK EXECUTE</h3>
-                <p>Type your raw human prompt idea on the left console and click <strong>⚡ [RUN BATTLEDECK PROMPT SYNTHESIS]</strong>.</p>
+                <h3>SYSTEM_READY: INPUT PROMPT AND CLICK EXECUTE</h3>
+                <p>Type your raw human prompt idea on the left console and click <strong>[RUN PROMPT ENHANCEMENT]</strong>.</p>
               </div>
             </div>
           </section>
@@ -128,7 +114,7 @@
       <div id="view-history-container" class="cyber-view-pane hidden">
         <section class="cyber-card full-history-card">
           <div class="card-badge-header">
-            <span class="badge-title"><i class="fa-solid fa-clock-rotate-left"></i> LOG_HISTORY_BUFFER // RECENT_EXECUTIONS</span>
+            <span class="badge-title"><i class="fa-solid fa-clock-rotate-left"></i> LOG_HISTORY_BUFFER</span>
             <button id="clear-history-btn" class="btn-secondary"><i class="fa-solid fa-trash-can"></i> [CLEAR LOG BUFFER]</button>
           </div>
 
@@ -141,7 +127,6 @@
 
     <footer class="app-footer">
       <div class="footer-container">
-        <p>MICROCYBER BATTLEDECK V02 // DEN-VULKAN PROMPT ARCHITECT // SYSTEM ONLINE</p>
         <div class="footer-links">
           <a href="website.json" download><i class="fa-solid fa-download"></i> [DOWNLOAD_WORKFLOW_JSON]</a>
         </div>
