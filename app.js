@@ -1,31 +1,18 @@
-// LocalStorage Keys
-const STORAGE_WEBHOOK_KEY = "prompt_studio_webhook_url";
-const STORAGE_POLLINATIONS_KEY = "prompt_studio_pollinations_key";
-const STORAGE_HISTORY_KEY = "prompt_studio_history";
-const DEFAULT_WEBHOOK_URL = "https://caravan-tidbit-flyover.ngrok-free.dev/webhook/enhance-promp";
+/* ==========================================================================
+   HYPER ENGINE PROMPT ARCHITECT - APPLICATION LOGIC
+   ========================================================================== */
+
+const STORAGE_WEBHOOK_KEY = "prompt_enhancer_n8n_webhook";
+const STORAGE_HISTORY_KEY = "prompt_enhancer_history_v3";
+const DEFAULT_WEBHOOK_URL = "http://localhost:5678/webhook/enhance-promp";
 
 // DOM Elements
-const rawPromptEl = document.getElementById("raw-prompt");
-const styleRefInput = document.getElementById("style-ref-input");
-const subjectRefInput = document.getElementById("subject-ref-input");
-const nicheSearchInput = document.getElementById("niche-search-input");
-const charCountEl = document.getElementById("char-count");
-const clearPromptBtn = document.getElementById("clear-prompt-btn");
 const enhanceBtn = document.getElementById("enhance-btn");
+const rawPromptInput = document.getElementById("raw-prompt");
+const clearPromptBtn = document.getElementById("clear-prompt-btn");
 const statusBarEl = document.getElementById("status-bar");
 const resultsGridEl = document.getElementById("results-grid");
 const activeModelTagEl = document.getElementById("active-model-tag");
-const modelSelectEl = document.getElementById("model-select");
-
-// Mode Tabs & Containers
-const tabSeo = document.getElementById("tab-seo");
-const tabTrends = document.getElementById("tab-trends");
-const tabImage = document.getElementById("tab-image");
-const tabGemini = document.getElementById("tab-gemini");
-
-const nicheSearchContainer = document.getElementById("niche-search-container");
-const styleTransferContainer = document.getElementById("style-transfer-container");
-const singlePromptContainer = document.getElementById("single-prompt-container");
 
 // Header & Modal Elements
 const webhookSettingsBtn = document.getElementById("webhook-settings-btn");
@@ -36,7 +23,6 @@ const bannerConfigBtn = document.getElementById("banner-config-btn");
 const settingsModal = document.getElementById("settings-modal");
 const closeModalBtn = document.getElementById("close-modal-btn");
 const webhookUrlInput = document.getElementById("webhook-url-input");
-const pollinationsKeyInput = document.getElementById("pollinations-key-input");
 const testWebhookBtn = document.getElementById("test-webhook-btn");
 const saveWebhookBtn = document.getElementById("save-webhook-btn");
 const testResultEl = document.getElementById("webhook-test-result");
@@ -51,29 +37,12 @@ const clearHistoryBtn = document.getElementById("clear-history-btn");
 
 // App State
 let webhookUrl = localStorage.getItem(STORAGE_WEBHOOK_KEY) || DEFAULT_WEBHOOK_URL;
-let pollinationsKey = localStorage.getItem(STORAGE_POLLINATIONS_KEY) || "";
 let historyData = JSON.parse(localStorage.getItem(STORAGE_HISTORY_KEY) || "[]");
-let currentMode = "niche-search"; // 'niche-search', 'style-transfer', or 'text-prompt'
-
-function buildPollinationsImageUrl(promptText) {
-  const encoded = encodeURIComponent((promptText || "masterpiece").replace(/[\\r\\n]+/g, ' ').trim().substring(0, 300));
-  let url = `https://gen.pollinations.ai/image/${encoded}?model=flux&nologo=true&width=1024&height=1024`;
-  if (pollinationsKey) {
-    url += `&key=${encodeURIComponent(pollinationsKey)}`;
-  }
-  return url;
-}
 
 // Initialize App
 document.addEventListener("DOMContentLoaded", () => {
   initWebhookState();
   initEventListeners();
-  initPillSelectors();
-  initPresetChips();
-  initNicheChips();
-  initModeTabs();
-  updateCharCount();
-  updateActiveModelTag(modelSelectEl.value);
 });
 
 function initWebhookState() {
@@ -85,561 +54,144 @@ function initWebhookState() {
     webhookIndicatorEl.classList.add("offline");
     webhookBannerEl.classList.remove("hidden");
   }
-  if (pollinationsKeyInput) {
-    pollinationsKeyInput.value = pollinationsKey;
-  }
-}
-
-function initModeTabs() {
-  const allTabs = [tabSeo, tabTrends, tabImage, tabGemini];
-
-  function setActiveTab(activeTab) {
-    allTabs.forEach(t => { if (t) t.classList.remove("active"); });
-    if (activeTab) activeTab.classList.add("active");
-  }
-
-  if (tabSeo) {
-    tabSeo.addEventListener("click", () => {
-      currentMode = "niche-search";
-      setActiveTab(tabSeo);
-
-      nicheSearchContainer.classList.remove("hidden");
-      styleTransferContainer.classList.add("hidden");
-      singlePromptContainer.classList.add("hidden");
-
-      modelSelectEl.value = "seo";
-      updateActiveModelTag("seo");
-      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-play"></i> [RUN SEO ANALYTICS]`;
-    });
-  }
-
-  if (tabTrends) {
-    tabTrends.addEventListener("click", () => {
-      currentMode = "niche-search";
-      setActiveTab(tabTrends);
-
-      nicheSearchContainer.classList.remove("hidden");
-      styleTransferContainer.classList.add("hidden");
-      singlePromptContainer.classList.add("hidden");
-
-      modelSelectEl.value = "trends";
-      updateActiveModelTag("trends");
-      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-play"></i> [RUN TREND ANALYTICS]`;
-    });
-  }
-
-  if (tabImage) {
-    tabImage.addEventListener("click", () => {
-      currentMode = "style-transfer";
-      setActiveTab(tabImage);
-
-      nicheSearchContainer.classList.add("hidden");
-      styleTransferContainer.classList.remove("hidden");
-      singlePromptContainer.classList.add("hidden");
-
-      modelSelectEl.value = "image";
-      updateActiveModelTag("image");
-      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-play"></i> [RUN IMAGE SYNTHESIS]`;
-    });
-  }
-
-  if (tabGemini) {
-    tabGemini.addEventListener("click", () => {
-      currentMode = "text-prompt";
-      setActiveTab(tabGemini);
-
-      nicheSearchContainer.classList.add("hidden");
-      styleTransferContainer.classList.add("hidden");
-      singlePromptContainer.classList.remove("hidden");
-
-      modelSelectEl.value = "gemini";
-      updateActiveModelTag("gemini");
-      enhanceBtn.querySelector(".btn-text").innerHTML = `<i class="fa-solid fa-play"></i> [RUN PROMPT ENHANCER]`;
-    });
-  }
-}
-
-function initNicheChips() {
-  document.querySelectorAll(".niche-chip").forEach((chip) => {
-    chip.addEventListener("click", () => {
-      const niche = chip.getAttribute("data-niche");
-      if (niche && nicheSearchInput) {
-        nicheSearchInput.value = niche;
-        document.querySelectorAll(".niche-chip").forEach((c) => c.classList.remove("active"));
-        chip.classList.add("active");
-        showStatus(`Selected Niche: "${chip.textContent.trim()}"`, "info");
-      }
-    });
-  });
-}
-
-function initPresetChips() {
-  document.querySelectorAll(".preset-chip").forEach((chip) => {
-    chip.addEventListener("click", () => {
-      const preset = chip.getAttribute("data-preset");
-      if (preset && styleRefInput) {
-        styleRefInput.value = preset;
-        document.querySelectorAll(".preset-chip").forEach((c) => c.classList.remove("active"));
-        chip.classList.add("active");
-        showStatus(`Applied style preset: "${chip.textContent.trim()}"`, "info");
-      }
-    });
-  });
-}
-
-function initPillSelectors() {
-  document.querySelectorAll('.pill-option input[type="radio"]').forEach((radio) => {
-    radio.addEventListener("change", (e) => {
-      const name = e.target.name;
-      document.querySelectorAll(`input[name="${name}"]`).forEach((r) => {
-        r.closest(".pill-option").classList.remove("active");
-      });
-      e.target.closest(".pill-option").classList.add("active");
-    });
-  });
 }
 
 function initEventListeners() {
-  modelSelectEl.addEventListener("change", () => {
-    updateActiveModelTag(modelSelectEl.value);
-  });
-
-  if (rawPromptEl) {
-    rawPromptEl.addEventListener("input", updateCharCount);
-  }
-  
-  if (clearPromptBtn) {
+  if (clearPromptBtn && rawPromptInput) {
     clearPromptBtn.addEventListener("click", () => {
-      if (rawPromptEl) rawPromptEl.value = "";
-      updateCharCount();
-      if (rawPromptEl) rawPromptEl.focus();
+      rawPromptInput.value = "";
     });
   }
 
-  enhanceBtn.addEventListener("click", enhancePrompt);
+  if (enhanceBtn) {
+    enhanceBtn.addEventListener("click", handleEnhanceRequest);
+  }
 
-  webhookSettingsBtn.addEventListener("click", openModal);
-  bannerConfigBtn.addEventListener("click", openModal);
-  closeModalBtn.addEventListener("click", closeModal);
-  saveWebhookBtn.addEventListener("click", saveWebhookUrl);
-  testWebhookBtn.addEventListener("click", testWebhookConnection);
+  // Webhook settings modal
+  if (webhookSettingsBtn) webhookSettingsBtn.addEventListener("click", openModal);
+  if (bannerConfigBtn) bannerConfigBtn.addEventListener("click", openModal);
+  if (closeModalBtn) closeModalBtn.addEventListener("click", closeModal);
 
-  toggleHistoryBtn.addEventListener("click", openHistoryDrawer);
-  closeHistoryBtn.addEventListener("click", closeHistoryDrawer);
-  drawerOverlay.addEventListener("click", closeHistoryDrawer);
-  clearHistoryBtn.addEventListener("click", clearHistory);
-}
+  if (saveWebhookBtn) {
+    saveWebhookBtn.addEventListener("click", () => {
+      const url = webhookUrlInput.value.trim();
+      webhookUrl = url;
+      localStorage.setItem(STORAGE_WEBHOOK_KEY, url);
+      initWebhookState();
+      closeModal();
+      showStatus("Webhook endpoint settings saved successfully.", "success");
+    });
+  }
 
-function updateCharCount() {
-  if (rawPromptEl && charCountEl) {
-    const len = rawPromptEl.value.length;
-    charCountEl.textContent = `${len} / 2000 chars`;
+  if (testWebhookBtn) {
+    testWebhookBtn.addEventListener("click", testWebhookConnection);
+  }
+
+  // History Drawer
+  if (toggleHistoryBtn) toggleHistoryBtn.addEventListener("click", openHistoryDrawer);
+  if (closeHistoryBtn) closeHistoryBtn.addEventListener("click", closeHistoryDrawer);
+  if (drawerOverlay) drawerOverlay.addEventListener("click", closeHistoryDrawer);
+
+  if (clearHistoryBtn) {
+    clearHistoryBtn.addEventListener("click", () => {
+      historyData = [];
+      localStorage.removeItem(STORAGE_HISTORY_KEY);
+      renderHistoryList();
+      showStatus("Log history buffer cleared.", "info");
+    });
   }
 }
 
-// Main Request Handler
-async function enhancePrompt() {
-  const selectedStyle = document.querySelector('input[name="prompt-style"]:checked')?.value || "detailed";
-  const selectedModel = modelSelectEl.value || "seo";
+async function handleEnhanceRequest() {
+  const promptText = rawPromptInput ? rawPromptInput.value.trim() : "";
 
-  let styleRef = "";
-  let subjectRef = "";
-  let rawPrompt = "";
-
-  if (currentMode === "niche-search") {
-    rawPrompt = nicheSearchInput ? nicheSearchInput.value.trim() : "";
-    if (!rawPrompt) {
-      showStatus("Please enter a niche keyword or topic.", "error");
-      return;
-    }
-    subjectRef = rawPrompt;
-  } else if (currentMode === "style-transfer") {
-    styleRef = styleRefInput.value.trim();
-    subjectRef = subjectRefInput.value.trim();
-
-    if (!styleRef && !subjectRef) {
-      showStatus("Please enter Image 1 Style Reference or Image 2 Subject Reference.", "error");
-      return;
-    }
-    rawPrompt = subjectRef ? (styleRef ? `${subjectRef} in the style of ${styleRef}` : subjectRef) : styleRef;
-  } else {
-    rawPrompt = rawPromptEl.value.trim();
-    if (!rawPrompt) {
-      showStatus("Please enter your prompt text first.", "error");
-      return;
-    }
-    subjectRef = rawPrompt;
+  if (!promptText) {
+    showStatus("PLEASE ENTER A RAW HUMAN PROMPT BEFORE EXECUTING HYPER ENGINE.", "error");
+    return;
   }
 
-  updateActiveModelTag(selectedModel);
   setLoadingState(true);
-  showStatus(`Executing request... Engine: ${selectedModel.toUpperCase()}`, "info");
+  showStatus(`CONTACTING HYPER ENGINE PIPELINE...`, "info");
 
-  renderLoadingSkeletons(selectedModel);
+  const payload = {
+    prompt: promptText,
+    model: "hyper_engine",
+    subject_ref: promptText
+  };
 
   try {
-    let variations = [];
+    let resultText = "";
 
-    if (webhookUrl) {
+    if (!webhookUrl) {
+      // Fallback demo execution
+      await new Promise(r => setTimeout(r, 600));
+      resultText = generateDemoHyperPrompt(promptText);
+    } else {
       const response = await fetch(webhookUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "69420"
-        },
-        body: JSON.stringify({
-          prompt: rawPrompt,
-          style_ref: styleRef || "Default Cinematic Lighting & High Detail",
-          subject_ref: subjectRef || rawPrompt,
-          model: selectedModel,
-          style: selectedStyle,
-          pollinations_key: pollinationsKey
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       });
 
-      const responseText = await response.text();
-
-      if (!responseText || !responseText.trim()) {
-        throw new Error("n8n returned an empty response. Please re-import the updated website.json workflow into n8n to activate the fixed response node.");
-      }
-
       if (!response.ok) {
-        throw new Error(`n8n responded with status ${response.status}: ${responseText.substring(0, 150)}`);
+        throw new Error(`Server returned HTTP ${response.status}: ${response.statusText}`);
       }
 
-      let data;
+      const rawText = await response.text();
       try {
-        data = JSON.parse(responseText);
+        const resJson = JSON.parse(rawText);
+        resultText = resJson.enhanced_prompt || resJson.output || resJson.text || rawText;
       } catch (e) {
-        throw new Error(`Invalid JSON returned: ${responseText.substring(0, 150)}`);
+        resultText = rawText;
       }
-
-      const enhancedPromptText = data.enhanced_prompt || data.prompt || (data.content && data.content.parts && data.content.parts[0]?.text);
-      const imageUrl = data.image_url || (selectedModel === "image" ? buildPollinationsImageUrl(enhancedPromptText || rawPrompt) : null);
-
-      variations = [{
-        label: getModelLabel(selectedModel),
-        model_type: selectedModel,
-        prompt: enhancedPromptText || rawPrompt,
-        image_url: imageUrl,
-        style_ref: data.style_ref || styleRef,
-        subject_ref: data.subject_ref || subjectRef,
-        payload_data: data
-      }];
-    } else {
-      // Demo Mode
-      await new Promise(resolve => setTimeout(resolve, 800));
-      variations = generateDemoVariations(rawPrompt, styleRef, subjectRef, selectedStyle, selectedModel);
-      showStatus("Generated using Demo Engine Mode.", "info");
     }
 
-    if (variations.length === 0) {
-      throw new Error("No responses returned from workflow.");
-    }
-
-    renderResults(variations);
-    showStatus("Execution completed successfully!", "success");
-    saveToHistory(rawPrompt, variations);
+    renderHyperMasterPromptCard(resultText);
+    saveToHistory(promptText, resultText);
+    showStatus(`HYPER ENGINE ENHANCEMENT SUCCESSFUL. MASTER PROMPT BUFFER UPDATED.`, "success");
 
   } catch (err) {
-    console.error("Enhance Prompt Error:", err);
-    showStatus(`${err.message}`, "error");
-    renderErrorState(err.message);
+    console.warn("n8n Webhook connection failed, using fallback generator:", err);
+    showStatus(`WEBHOOK WARNING: ${err.message}. HYPER DEMO OUTPUT GENERATED BELOW.`, "error");
+    const demoPrompt = generateDemoHyperPrompt(promptText);
+    renderHyperMasterPromptCard(demoPrompt);
   } finally {
     setLoadingState(false);
   }
 }
 
-function updateActiveModelTag(model) {
-  if (model === "seo") {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-chart-line"></i> Engine: SEO & Ad Revenue Intelligence`;
-  } else if (model === "trends") {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-earth-americas"></i> Engine: USA vs PH Trends & Analytics`;
-  } else if (model === "image") {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-image"></i> Engine: Pure Image Generator (FLUX)`;
-  } else {
-    activeModelTagEl.innerHTML = `<i class="fa-solid fa-file-lines"></i> Engine: Pure Text Prompt Enhancer`;
-  }
-}
-
-function getModelLabel(modelKey) {
-  if (modelKey === "seo") return "SEO & Ad Revenue Intelligence";
-  if (modelKey === "trends") return "USA vs Philippines Regional Trends";
-  if (modelKey === "image") return "Pollinations FLUX Image Generator";
-  return "Google Gemini Prompt Enhancer";
-}
-
-// Strictly Decoupled Result Renderers
-function renderResults(variations) {
+// Render Master Hyper Prompt Card
+function renderHyperMasterPromptCard(promptText) {
   resultsGridEl.innerHTML = "";
 
-  variations.forEach((v) => {
-    const modelType = v.model_type || modelSelectEl.value;
-    const label = v.label || getModelLabel(modelType);
-    const text = v.prompt || "";
-    
-    let parsedJson = null;
-    try {
-      if (typeof text === "string" && text.trim().startsWith("{")) {
-        parsedJson = JSON.parse(text);
-      }
-    } catch (e) {}
+  const wordCount = promptText ? promptText.trim().split(/\s+/).length : 0;
+  const charCount = promptText ? promptText.length : 0;
 
-    // 1. PURE TEXT PROMPT ENHANCER (Strictly Text Only, No Image Container)
-    if (modelType === "gemini") {
-      renderPureTextCard(label, text);
-    }
-    // 2. PURE IMAGE GENERATOR (Strictly Image Only + Generation Notes)
-    else if (modelType === "image") {
-      const imageUrl = v.image_url || buildPollinationsImageUrl(text);
-      renderPureImageCard(label, imageUrl, text, v.style_ref, v.subject_ref);
-    }
-    // 3. SEO & AD REVENUE INTELLIGENCE (Compact, Detailed Table Dashboard, No Random Recommendations)
-    else if (modelType === "seo") {
-      renderCompactSeoCard(label, parsedJson, v.subject_ref);
-    }
-    // 4. USA VS PH REGIONAL TRENDS (Compact Regional Analytics)
-    else if (modelType === "trends") {
-      renderCompactTrendsCard(label, parsedJson, v.subject_ref);
-    }
-    // Fallback: Default Text
-    else {
-      renderPureTextCard(label, text);
-    }
-  });
-}
-
-// Renderer 1: Pure Text Only (No Image container rendered)
-function renderPureTextCard(label, text) {
   const card = document.createElement("div");
-  card.className = "result-card card-gemini compact-card";
+  card.className = "result-card card-text-only";
   card.innerHTML = `
     <div class="result-header">
       <div class="model-name">
-        <i class="fa-solid fa-file-code" style="color: #4285f4"></i>
-        <span>${escapeHtml(label)}</span>
-        <span class="badge-text-only">Pure Text Output</span>
+        <i class="fa-solid fa-bolt" style="color: #00ffcc;"></i>
+        <span>DEN-VULKAN MASTER PROMPT</span>
+        <span class="badge-text-only">PRODUCTION-READY LLM PROMPT</span>
       </div>
       <div class="result-actions">
-        <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>Copy Text</span></button>
+        <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>COPY_MASTER_PROMPT</span></button>
       </div>
     </div>
-    <div class="prompt-body-wrapper">
-      <pre class="prompt-output">${escapeHtml(text)}</pre>
+
+    <div class="prompt-body">
+      <pre class="prompt-output">${escapeHtml(promptText)}</pre>
     </div>
+
     <div class="result-footer">
-      <span><i class="fa-solid fa-align-left"></i> ${getWordCount(text)} words | ${text.length} chars</span>
-      <span>Production Ready Text Prompt</span>
+      <span>STATISTICS: ${charCount} CHARS | ${wordCount} WORDS</span>
+      <span>COMPATIBILITY: ChatGPT-4o | Gemini 1.5 Pro | Claude 3.5 | Llama 3</span>
     </div>
   `;
 
-  bindCopyButton(card, text);
-  resultsGridEl.appendChild(card);
-}
-
-// Renderer 2: Pure Image Only + Additional Notes
-function renderPureImageCard(label, imageUrl, promptText, styleRef, subjectRef) {
-  const card = document.createElement("div");
-  card.className = "result-card card-image compact-card";
-  
-  card.innerHTML = `
-    <div class="result-header">
-      <div class="model-name">
-        <i class="fa-solid fa-image" style="color: #a855f7"></i>
-        <span>${escapeHtml(label)}</span>
-        <span class="badge-image-only">1024 x 1024 FLUX</span>
-      </div>
-      <div class="result-actions">
-        <button class="btn-img-action copy-img-url-btn" data-url="${escapeHtml(imageUrl)}"><i class="fa-solid fa-link"></i> Copy URL</button>
-        <a href="${escapeHtml(imageUrl)}" download="generated_image_3.jpg" target="_blank" class="btn-img-action primary-action"><i class="fa-solid fa-download"></i> Download Image</a>
-      </div>
-    </div>
-
-    <!-- Prominent Image Display -->
-    <div class="generated-image-container compact-image-box">
-      <div class="image-preview-wrapper compact-wrapper">
-        <div class="image-skeleton-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Rendering Image...</div>
-        <img src="${escapeHtml(imageUrl)}" alt="Generated Image 3" class="generated-image-preview" onload="this.previousElementSibling.style.display='none'; this.style.opacity='1';" onerror="this.previousElementSibling.innerHTML='Failed to load image preview';">
-      </div>
-    </div>
-
-    <!-- Additional Generation Notes Drawer -->
-    <div class="generation-notes-box">
-      <div class="notes-header"><i class="fa-solid fa-sliders"></i> Generation Notes & Parameters:</div>
-      <div class="notes-grid">
-        <div class="note-item"><strong>Engine Model:</strong> Pollinations FLUX.1 Neural Synthesis</div>
-        <div class="note-item"><strong>Dimensions:</strong> 1024 x 1024 px (1:1 Square)</div>
-        <div class="note-item"><strong>Style Reference:</strong> ${escapeHtml(styleRef || 'Cinematic Volumetric Lighting')}</div>
-        <div class="note-item"><strong>Subject Reference:</strong> ${escapeHtml(subjectRef || promptText || 'Masterpiece Subject')}</div>
-      </div>
-      <div class="prompt-snippet-box">
-        <span class="snippet-label">Synthesized Engine Prompt:</span>
-        <code>${escapeHtml(promptText)}</code>
-      </div>
-    </div>
-  `;
-
-  // Copy Image Link Handler
-  const copyImgUrlBtn = card.querySelector(".copy-img-url-btn");
-  if (copyImgUrlBtn) {
-    copyImgUrlBtn.addEventListener("click", () => {
-      navigator.clipboard.writeText(imageUrl).then(() => {
-        copyImgUrlBtn.innerHTML = `<i class="fa-solid fa-check"></i> Copied!`;
-        setTimeout(() => {
-          copyImgUrlBtn.innerHTML = `<i class="fa-solid fa-link"></i> Copy URL`;
-        }, 2000);
-      });
-    });
-  }
-
-  resultsGridEl.appendChild(card);
-}
-
-// Renderer 3: Compact SEO & Ad Revenue Analytics (Clean, Detailed Table, No Random Recommendations)
-function renderCompactSeoCard(label, parsedJson, subjectRef) {
-  const seoData = parsedJson || {
-    niche: subjectRef || "Target Keyword Niche",
-    seo_search_volume: "48,500 / mo",
-    seo_difficulty: "38/100 (Moderate)",
-    estimated_rpm: "$22.50 - $42.00",
-    estimated_cpc: "$2.10 - $5.80",
-    est_monthly_revenue_potential: "$4,500 - $12,000",
-    pros: [
-      "High advertiser competition & premium affiliate payouts.",
-      "Evergreen search volume with consistent year-round interest.",
-      "Low competition in long-tail search query variations."
-    ],
-    cons: [
-      "Established media domains hold top 3 positions for primary seed keywords.",
-      "Requires publishing high-authority structured content."
-    ]
-  };
-
-  const card = document.createElement("div");
-  card.className = "result-card card-analytics compact-card";
-  card.innerHTML = `
-    <div class="result-header">
-      <div class="model-name" style="color: #10b981;">
-        <i class="fa-solid fa-chart-column"></i>
-        <span>${escapeHtml(label)}</span>
-        <span class="badge-analytics">Niche Financial Intelligence</span>
-      </div>
-      <div class="result-actions">
-        <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>Copy Data</span></button>
-      </div>
-    </div>
-
-    <div class="niche-title-banner compact-banner">
-      <span class="niche-tag">Target Keyword:</span>
-      <h3>"${escapeHtml(seoData.niche)}"</h3>
-    </div>
-
-    <!-- High-Density Metrics Bar -->
-    <div class="metrics-grid compact-grid">
-      <div class="metric-card metric-green">
-        <span class="metric-label">Est. Monthly Revenue</span>
-        <span class="metric-value">${escapeHtml(seoData.est_monthly_revenue_potential)}</span>
-      </div>
-      <div class="metric-card metric-purple">
-        <span class="metric-label">AdSense / Ad RPM</span>
-        <span class="metric-value">${escapeHtml(seoData.estimated_rpm)}</span>
-      </div>
-      <div class="metric-card metric-blue">
-        <span class="metric-label">Search Volume</span>
-        <span class="metric-value">${escapeHtml(seoData.seo_search_volume)}</span>
-      </div>
-      <div class="metric-card metric-orange">
-        <span class="metric-label">SEO Difficulty</span>
-        <span class="metric-value">${escapeHtml(seoData.seo_difficulty)}</span>
-      </div>
-    </div>
-
-    <!-- Compact Pros & Cons Data Table (Clean, detailed, free of random filler) -->
-    <div class="pros-cons-container compact-pc">
-      <div class="pros-box compact-box">
-        <h4><i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Key Market Advantages (Pros)</h4>
-        <ul>
-          ${(seoData.pros || []).map(p => `<li><i class="fa-solid fa-check"></i> ${escapeHtml(p)}</li>`).join("")}
-        </ul>
-      </div>
-      <div class="cons-box compact-box">
-        <h4><i class="fa-solid fa-circle-xmark" style="color: #f43f5e;"></i> Niche Entry Risks (Cons)</h4>
-        <ul>
-          ${(seoData.cons || []).map(c => `<li><i class="fa-solid fa-xmark"></i> ${escapeHtml(c)}</li>`).join("")}
-        </ul>
-      </div>
-    </div>
-  `;
-
-  bindCopyButton(card, JSON.stringify(seoData, null, 2));
-  resultsGridEl.appendChild(card);
-}
-
-// Renderer 4: Compact USA vs Philippines Regional Trends
-function renderCompactTrendsCard(label, parsedJson, subjectRef) {
-  const trendData = parsedJson || {
-    niche: subjectRef || "Target Keyword Niche",
-    usa_popularity: "🔥 95/100 (Top 3 Search Trend)",
-    philippines_popularity: "📈 89/100 (Surging PH Interest)",
-    usa_insights: "US market favors high-end subscriptions, desktop/mobile convenience, and fast shipping.",
-    philippines_insights: "PH market favors Shopee/Lazada integrations, GCash payments, and TikTok influencer trends.",
-    target_demographics: "Ages 18-34 | Tech Professionals & Content Creators",
-    growth_trajectory: "🚀 +44% YoY Search Growth",
-    multidisciplinary_stats: [
-      "74% Mobile traffic share in PH vs 62% in US",
-      "Peak engagement hours: 8 PM - 11 PM local time",
-      "Top channels: Google Search (48%), TikTok (32%), YouTube Shorts (20%)"
-    ]
-  };
-
-  const card = document.createElement("div");
-  card.className = "result-card card-analytics compact-card";
-  card.innerHTML = `
-    <div class="result-header">
-      <div class="model-name" style="color: #38bdf8;">
-        <i class="fa-solid fa-earth-americas"></i>
-        <span>${escapeHtml(label)}</span>
-        <span class="badge-analytics">Regional Trend Analytics</span>
-      </div>
-      <div class="result-actions">
-        <button class="copy-btn" type="button"><i class="fa-regular fa-copy"></i> <span>Copy Data</span></button>
-      </div>
-    </div>
-
-    <div class="niche-title-banner compact-banner">
-      <span class="niche-tag">Regional Query:</span>
-      <h3>"${escapeHtml(trendData.niche)}"</h3>
-    </div>
-
-    <!-- Regional Comparison Cards -->
-    <div class="regional-grid compact-grid">
-      <div class="region-card usa-card compact-region">
-        <div class="region-flag">🇺🇸 U.S.A. Market Insights</div>
-        <div class="region-pop">${escapeHtml(trendData.usa_popularity)}</div>
-        <p class="region-desc">${escapeHtml(trendData.usa_insights)}</p>
-      </div>
-
-      <div class="region-card ph-card compact-region">
-        <div class="region-flag">🇵🇭 Philippines Market Insights</div>
-        <div class="region-pop">${escapeHtml(trendData.philippines_popularity)}</div>
-        <p class="region-desc">${escapeHtml(trendData.philippines_insights)}</p>
-      </div>
-    </div>
-
-    <!-- Compact Multidisciplinary Stats -->
-    <div class="multidisciplinary-box compact-box">
-      <h4><i class="fa-solid fa-chart-pie"></i> Audience & Multidisciplinary Stats</h4>
-      <div class="demographics-row">
-        <span><strong>Demographics:</strong> ${escapeHtml(trendData.target_demographics)}</span>
-        <span><strong>Trajectory:</strong> ${escapeHtml(trendData.growth_trajectory)}</span>
-      </div>
-      <ul class="stats-list">
-        ${(trendData.multidisciplinary_stats || []).map(s => `<li><i class="fa-solid fa-chart-simple"></i> ${escapeHtml(s)}</li>`).join("")}
-      </ul>
-    </div>
-  `;
-
-  bindCopyButton(card, JSON.stringify(trendData, null, 2));
+  bindCopyButton(card, promptText);
   resultsGridEl.appendChild(card);
 }
 
@@ -648,123 +200,51 @@ function bindCopyButton(card, textToCopy) {
   if (copyBtn) {
     copyBtn.addEventListener("click", () => {
       navigator.clipboard.writeText(textToCopy).then(() => {
-        copyBtn.classList.add("copied");
-        copyBtn.innerHTML = `<i class="fa-solid fa-check"></i> <span>Copied!</span>`;
-        setTimeout(() => {
-          copyBtn.classList.remove("copied");
-          copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> <span>Copy</span>`;
-        }, 2000);
+        const originalHtml = copyBtn.innerHTML;
+        copyBtn.innerHTML = `<i class="fa-solid fa-check"></i> COPIED_TO_CLIPBOARD!`;
+        setTimeout(() => { copyBtn.innerHTML = originalHtml; }, 2000);
       });
     });
   }
 }
 
-function renderLoadingSkeletons(selectedModel) {
-  const label = getModelLabel(selectedModel);
-  resultsGridEl.innerHTML = `
-    <div class="result-card card-analytics compact-card">
-      <div class="result-header">
-        <div class="model-name"><i class="fa-solid fa-circle-notch fa-spin"></i> Processing ${escapeHtml(label)}...</div>
-      </div>
-      <div class="loading-fusion-box compact-loading">
-        <div class="skeleton-image-placeholder">
-          <i class="fa-solid fa-microchip fa-bounce"></i>
-          <p>Processing clean, detailed data for engine: ${selectedModel.toUpperCase()}...</p>
-        </div>
-      </div>
-    </div>
-  `;
-}
+// Fallback Demo Hyper Prompt Generator
+function generateDemoHyperPrompt(humanPrompt) {
+  return `<role>
+You are an elite Senior Software Architect, Systems Engineer, and Production Code Specialist.
+You possess deep expertise in writing robust, scalable, self-documenting code with comprehensive error handling and optimal performance.
+</role>
 
-function renderErrorState(errorMsg) {
-  resultsGridEl.innerHTML = `
-    <div class="empty-state card compact-card">
-      <div class="empty-icon" style="color: #f43f5e; background: rgba(244, 63, 94, 0.1);"><i class="fa-solid fa-triangle-exclamation"></i></div>
-      <h3>Execution Error</h3>
-      <p>${escapeHtml(errorMsg)}</p>
-    </div>
-  `;
-}
+<objective>
+Analyze the human prompt objective: "${humanPrompt}".
+Synthesize a complete, production-ready solution that fulfills all functional, architectural, and operational requirements without truncation or placeholder logic.
+</objective>
 
-// Fallback Demo Response Generator
-function generateDemoVariations(promptText, styleRef, subjectRef, style, model) {
-  const keyword = promptText || subjectRef || "AI Video Editing Tools";
+<context>
+- Target Environment: Production Cloud / Local Operating System
+- Operating Constraints: Strict typing, zero unhandled exception paths, clean code architecture, and modular function design.
+- Target LLMs: Designed for optimal execution in ChatGPT-4o, Gemini 1.5 Pro, Claude 3.5 Sonnet, and Llama 3.
+</context>
 
-  if (model === "seo") {
-    const seoData = {
-      niche: keyword,
-      seo_search_volume: "58,400 / mo",
-      seo_difficulty: "38/100 (Moderate Competition)",
-      estimated_rpm: "$28.50 - $54.00 (AdSense / Mediavine)",
-      estimated_cpc: "$2.80 - $6.50",
-      est_monthly_revenue_potential: "$5,800 - $16,200",
-      pros: [
-        "High Advertiser Demand: Strong bidding competition with $2.80 - $6.50 CPC rates.",
-        "Lucrative Affiliate Commissions: SaaS tools offering 30%-50% recurring monthly payouts.",
-        "Evergreen Growth Trajectory: Sustained 45%+ annual search volume expansion.",
-        "High Commercial Intent: Users actively comparing pricing and buying options.",
-        "Rich Long-Tail Opportunities: Hundreds of low-competition search query variations."
-      ],
-      cons: [
-        "High Domain Authority Competition: Major media sites occupy top 3 Google positions.",
-        "Frequent Content Updates Required: Rapid pace of AI software releases requires active editing.",
-        "Link Building Investment: Requires building authoritative contextual backlinks.",
-        "AI Search Overviews: Google SGE capturing a portion of top-of-funnel informational clicks.",
-        "E-E-A-T Verification: Demands hands-on product testing to establish search authority."
-      ]
-    };
+<execution_steps>
+1. Analyze the core functional requirements and edge cases inherent in the raw human prompt.
+2. Outline the step-by-step modular code structure and data schemas required.
+3. Implement the complete, clean, production-grade source code with explicit type annotations and docstrings.
+4. Include explicit error handling, input validation, and graceful failure fallbacks.
+5. Provide clear verification instructions and unit test guidelines.
+</execution_steps>
 
-    return [{
-      label: getModelLabel(model),
-      model_type: "seo",
-      prompt: JSON.stringify(seoData, null, 2),
-      subject_ref: keyword
-    }];
+<output_format>
+- Structure response in clean GitHub-Flavored Markdown.
+- Enclose all code in fenced code blocks with language identifiers.
+- Maintain professional, precise technical documentation style.
+</output_format>
 
-  } else if (model === "trends") {
-    const trendData = {
-      niche: keyword,
-      usa_popularity: "🔥 96/100 (Top 5 Search Trend in US Tech & Media)",
-      philippines_popularity: "📈 92/100 (Surging Interest on TikTok & Shopee)",
-      usa_insights: "US market prioritizes high-end SaaS integrations, 4K rendering speed, desktop convenience, and direct credit card / Apple Pay subscriptions.",
-      philippines_insights: "PH market prioritizes CapCut/TikTok integrations, GCash / ShopeePay payment support, mobile accessibility, and freelance client workflows.",
-      target_demographics: "Ages 18-35 | Content Creators, Remote Freelancers & Marketing Agencies",
-      growth_trajectory: "🚀 +48% YoY Annual Search Volume Expansion",
-      multidisciplinary_stats: [
-        "76% Mobile search share in Philippines vs 64% Desktop/Mobile split in USA",
-        "Peak user engagement window: 7:30 PM - 11:00 PM local time across both regions",
-        "Primary discovery channels: Google Organic Search (48%), TikTok/Reels (32%), YouTube Shorts (20%)",
-        "US Checkout Behavior: 82% Direct web subscription purchase via Credit Card/PayPal",
-        "PH Checkout Behavior: 74% GCash / ShopeePay / Cash-on-Delivery preferred over credit card"
-      ]
-    };
-
-    return [{
-      label: getModelLabel(model),
-      model_type: "trends",
-      prompt: JSON.stringify(trendData, null, 2),
-      subject_ref: keyword
-    }];
-
-  } else if (model === "image") {
-    const synthesizedMasterPrompt = `A high-fidelity master digital artwork showcasing ${keyword}, rendered in ${styleRef || 'Vibrant 3D Pixar style'}. Masterpiece quality, octane render, 8k resolution.`;
-    return [{
-      label: getModelLabel(model),
-      model_type: "image",
-      prompt: synthesizedMasterPrompt,
-      image_url: buildPollinationsImageUrl(synthesizedMasterPrompt),
-      style_ref: styleRef,
-      subject_ref: keyword
-    }];
-
-  } else {
-    return [{
-      label: getModelLabel(model),
-      model_type: "gemini",
-      prompt: `<role>\nYou are a prompt engineering specialist.\n</role>\n\n<task>\nObjective: "${keyword}"\n</task>\n\n<framework>\n1. Provide structured response formatted in clean markdown.\n2. Calibrated style preset: ${style.toUpperCase()}.\n</framework>`,
-      subject_ref: keyword
-    }];
-  }
+<negative_constraints>
+- DO NOT use pseudocode or incomplete placeholders (e.g. "// TODO: implement later").
+- DO NOT summarize or skip implementation steps.
+- DO NOT introduce unverified third-party dependencies without explicit justification.
+</negative_constraints>`;
 }
 
 // UI Utilities
@@ -782,96 +262,29 @@ function setLoadingState(isLoading) {
   }
 }
 
-function showStatus(msg, type) {
+function showStatus(msg, type = "info") {
+  if (!statusBarEl) return;
   statusBarEl.className = `status-bar ${type}`;
-  statusBarEl.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : type === 'success' ? 'fa-circle-check' : 'fa-circle-info'}"></i> <span>${escapeHtml(msg)}</span>`;
+  statusBarEl.innerText = msg;
   statusBarEl.classList.remove("hidden");
 }
 
-function getWordCount(str) {
-  if (!str) return 0;
-  return str.trim().split(/\s+/).filter(Boolean).length;
+// History Handling
+function saveToHistory(prompt, result) {
+  const item = {
+    id: Date.now(),
+    timestamp: new Date().toLocaleTimeString(),
+    prompt,
+    result
+  };
+
+  historyData.unshift(item);
+  if (historyData.length > 20) historyData.pop();
+  localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(historyData));
 }
 
-function escapeHtml(str) {
-  if (!str) return "";
-  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
-
-// Modal Handlers
-function openModal() {
-  webhookUrlInput.value = webhookUrl;
-  if (pollinationsKeyInput) pollinationsKeyInput.value = pollinationsKey;
-  testResultEl.className = "test-result";
-  testResultEl.textContent = "";
-  settingsModal.classList.add("active");
-}
-
-function closeModal() {
-  settingsModal.classList.remove("active");
-}
-
-function saveWebhookUrl() {
-  const url = webhookUrlInput.value.trim();
-  const key = pollinationsKeyInput ? pollinationsKeyInput.value.trim() : "";
-
-  webhookUrl = url || DEFAULT_WEBHOOK_URL;
-  pollinationsKey = key;
-
-  if (url) {
-    localStorage.setItem(STORAGE_WEBHOOK_KEY, url);
-  } else {
-    localStorage.removeItem(STORAGE_WEBHOOK_KEY);
-  }
-
-  if (key) {
-    localStorage.setItem(STORAGE_POLLINATIONS_KEY, key);
-  } else {
-    localStorage.removeItem(STORAGE_POLLINATIONS_KEY);
-  }
-
-  showStatus("Settings saved successfully!", "success");
-  initWebhookState();
-  closeModal();
-}
-
-async function testWebhookConnection() {
-  const url = webhookUrlInput.value.trim();
-  if (!url) {
-    testResultEl.className = "test-result error";
-    testResultEl.textContent = "Please enter a valid Webhook URL first.";
-    return;
-  }
-
-  testResultEl.className = "test-result";
-  testResultEl.textContent = "Testing connection...";
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "ngrok-skip-browser-warning": "69420"
-      },
-      body: JSON.stringify({ prompt: "ping_test", model: "seo" }),
-    });
-
-    if (response.ok) {
-      testResultEl.className = "test-result success";
-      testResultEl.textContent = "✓ Webhook connection successful! Status 200 OK.";
-    } else {
-      testResultEl.className = "test-result error";
-      testResultEl.textContent = `✗ Received status ${response.status} from server.`;
-    }
-  } catch (err) {
-    testResultEl.className = "test-result error";
-    testResultEl.textContent = `✗ Connection failed: ${err.message}.`;
-  }
-}
-
-// History Drawer Handlers
 function openHistoryDrawer() {
-  renderHistory();
+  renderHistoryList();
   historyDrawer.classList.add("open");
   drawerOverlay.classList.add("active");
 }
@@ -881,44 +294,74 @@ function closeHistoryDrawer() {
   drawerOverlay.classList.remove("active");
 }
 
-function saveToHistory(rawPrompt, variations) {
-  const item = {
-    id: Date.now(),
-    timestamp: new Date().toLocaleString(),
-    rawPrompt: rawPrompt,
-    variations: variations
-  };
-  historyData.unshift(item);
-  if (historyData.length > 20) historyData.pop();
-  localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(historyData));
-}
-
-function renderHistory() {
+function renderHistoryList() {
   if (historyData.length === 0) {
-    historyListEl.innerHTML = `<p class="history-empty">No prompt history saved yet.</p>`;
+    historyListEl.innerHTML = `<p class="history-empty">NO LOG HISTORY RECORDED.</p>`;
     return;
   }
 
-  historyListEl.innerHTML = "";
-  historyData.forEach((item) => {
-    const div = document.createElement("div");
-    div.className = "history-item";
-    div.innerHTML = `
-      <div class="history-item-raw">${escapeHtml(item.rawPrompt)}</div>
-      <div class="history-item-time"><i class="fa-regular fa-clock"></i> ${item.timestamp}</div>
-    `;
-    div.addEventListener("click", () => {
-      if (nicheSearchInput) nicheSearchInput.value = item.rawPrompt;
-      renderResults(item.variations);
-      closeHistoryDrawer();
-      showStatus("Restored item from history.", "info");
-    });
-    historyListEl.appendChild(div);
-  });
+  historyListEl.innerHTML = historyData.map(item => `
+    <div class="history-item" onclick="loadHistoryItem(${item.id})">
+      <div class="history-meta">
+        <span class="history-time">[${escapeHtml(item.timestamp)}]</span>
+        <span class="history-model">HYPER_ENGINE</span>
+      </div>
+      <div class="history-prompt">"${escapeHtml(item.prompt)}"</div>
+    </div>
+  `).join("");
 }
 
-function clearHistory() {
-  historyData = [];
-  localStorage.removeItem(STORAGE_HISTORY_KEY);
-  renderHistory();
+window.loadHistoryItem = function (id) {
+  const found = historyData.find(h => h.id === id);
+  if (found) {
+    renderHyperMasterPromptCard(found.result);
+    closeHistoryDrawer();
+    showStatus(`LOADED LOG HISTORY ITEM [${found.timestamp}]`, "info");
+  }
+};
+
+// Modal Handling
+function openModal() {
+  settingsModal.classList.add("active");
+}
+
+function closeModal() {
+  settingsModal.classList.remove("active");
+  if (testResultEl) testResultEl.innerHTML = "";
+}
+
+async function testWebhookConnection() {
+  const url = webhookUrlInput.value.trim();
+  if (!url) {
+    testResultEl.innerHTML = `<span style="color:#f43f5e;">PLEASE ENTER A VALID URL BEFORE TESTING.</span>`;
+    return;
+  }
+
+  testResultEl.innerHTML = `<span style="color:#ffb000;"><i class="fa-solid fa-spinner fa-spin"></i> TESTING CONNECTION...</span>`;
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: "Connection Test", model: "hyper_engine" })
+    });
+
+    if (res.ok) {
+      testResultEl.innerHTML = `<span style="color:#10b981;"><i class="fa-solid fa-check"></i> CONNECTION SUCCESSFUL! HTTP ${res.status}</span>`;
+    } else {
+      testResultEl.innerHTML = `<span style="color:#f43f5e;"><i class="fa-solid fa-xmark"></i> CONNECTION FAILED: HTTP ${res.status}</span>`;
+    }
+  } catch (e) {
+    testResultEl.innerHTML = `<span style="color:#f43f5e;"><i class="fa-solid fa-xmark"></i> ERROR: ${escapeHtml(e.message)}</span>`;
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }

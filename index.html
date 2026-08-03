@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PROMPT STUDIO v8.7 | AMBER CRT TERMINAL</title>
-  <meta name="description" content="Vintage Amber CRT Terminal Interface for AI Market Intelligence, FLUX Image Generation, and Prompt Enhancement.">
+  <title>DEN-VULKAN BIOS (TM) v1.03 | CYAN CRT TERMINAL</title>
+  <meta name="description" content="DEN-VULKAN BIOS Vintage Cyan CRT Terminal Interface for High-Performance Human Prompt Architecture.">
 
   <!-- Google Fonts: Share Tech Mono & VT323 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,30 +25,34 @@
   <!-- Terminal Main Window Container -->
   <div class="terminal-frame">
 
-    <!-- Terminal Header / Navigation Bar -->
-    <header class="app-header">
-      <div class="header-container">
-        <div class="brand">
-          <div class="logo-icon">
-            <i class="fa-solid fa-terminal"></i>
-          </div>
-          <div class="brand-text">
-            <h1>SYS_PROMPT_STUDIO <span class="badge-v">v8.7</span></h1>
-            <p class="brand-sub">AMBER CRT TERMINAL COMMAND CENTER</p>
-          </div>
-        </div>
+    <!-- Top BIOS Header Bar -->
+    <header class="bios-header">
+      <div class="bios-top-line">
+        <span class="bios-title">DEN-VULKAN BIOS (TM)</span>
+        <span class="bios-copy">COPYRIGHT DEN-VULKAN(C) 2026</span>
+        <span class="bios-tag">RESEARCH</span>
+        <span class="bios-ver">VER V1.03</span>
+        <span class="bios-port">PORT......3</span>
+      </div>
+
+      <!-- BIOS Top Menu Bar -->
+      <nav class="bios-menu-bar">
+        <span class="bios-menu-item active">SUMMARY</span>
+        <span class="bios-menu-item">FIXED</span>
+        <span class="bios-menu-item">BOOT</span>
+        <span class="bios-menu-item">SEQ</span>
+        <span class="bios-menu-item">MORE+</span>
 
         <div class="header-actions">
           <button id="webhook-settings-btn" class="btn-icon" title="Configure n8n Webhook URL">
             <i class="fa-solid fa-gear"></i>
             <span id="webhook-indicator" class="status-dot"></span>
           </button>
-
           <button id="toggle-history-btn" class="btn-secondary">
             <i class="fa-solid fa-clock-rotate-left"></i> LOG_HISTORY
           </button>
         </div>
-      </div>
+      </nav>
     </header>
 
     <!-- Webhook Notice Banner if not configured -->
@@ -60,84 +64,36 @@
       </div>
     </div>
 
-    <main class="main-layout">
-      <!-- Mode Switcher Tabs (Terminal Function Keys) -->
-      <div class="mode-tabs">
-        <button id="tab-seo" class="mode-tab active">
-          <i class="fa-solid fa-chart-line"></i> [F1] SEO & AD REVENUE
-        </button>
-        <button id="tab-trends" class="mode-tab">
-          <i class="fa-solid fa-earth-americas"></i> [F2] USA VS PH TRENDS
-        </button>
-        <button id="tab-image" class="mode-tab">
-          <i class="fa-solid fa-image"></i> [F3] AI IMAGE GENERATOR
-        </button>
-        <button id="tab-gemini" class="mode-tab">
-          <i class="fa-solid fa-file-lines"></i> [F4] PROMPT ENHANCER
-        </button>
-      </div>
-
-      <!-- Hidden Model State Element -->
-      <select id="model-select" class="hidden">
-        <option value="seo" selected>seo</option>
-        <option value="trends">trends</option>
-        <option value="image">image</option>
-        <option value="gemini">gemini</option>
-      </select>
-
-      <!-- Prompt Input Panel -->
-      <section class="input-card card">
-        <!-- Niche Search Engine Inputs (Default active mode for SEO & Trends) -->
-        <div id="niche-search-container" class="niche-search-box">
-          <div class="search-bar-wrapper">
-            <span class="prompt-symbol">SYSTEM_KEYWORD&gt;</span>
-            <input type="text" id="niche-search-input" class="niche-input"
-              placeholder="ENTER TARGET NICHE OR KEYWORD QUERY..."
-              autocomplete="off">
-          </div>
+    <!-- Main BIOS Dual Panel Body Layout -->
+    <main class="bios-main-grid">
+      <!-- Left Column Panel: Control & Input Console -->
+      <section class="bios-panel bios-panel-left">
+        <div class="panel-header">
+          <h3><i class="fa-solid fa-terminal"></i> CMOS_SETUP_UTILITY // SYSTEM_INPUT</h3>
         </div>
 
-        <!-- Style Transfer Mode Inputs (Hidden in Niche Search mode) -->
-        <div id="style-transfer-container" class="transfer-inputs-grid hidden">
-          <!-- Image 1: Style Reference -->
-          <div class="ref-input-box card-inner">
-            <div class="ref-header">
-              <span class="ref-badge badge-style"><i class="fa-solid fa-paintbrush"></i> STYLE_REFERENCE&gt;</span>
-            </div>
-            <textarea id="style-ref-input" class="ref-textarea"
-              placeholder="ENTER IMAGE 1 STYLE DIRECTIVE (e.g. 3D Pixar cartoony style, volumetric lighting)..."
-              rows="2"></textarea>
-          </div>
-
-          <!-- Fusion Symbol -->
-          <div class="fusion-symbol">
-            <div class="plus-circle"><i class="fa-solid fa-plus"></i></div>
-          </div>
-
-          <!-- Image 2: Subject Reference -->
-          <div class="ref-input-box card-inner">
-            <div class="ref-header">
-              <span class="ref-badge badge-subject"><i class="fa-solid fa-user-astronaut"></i> SUBJECT_REFERENCE&gt;</span>
-            </div>
-            <textarea id="subject-ref-input" class="ref-textarea"
-              placeholder="ENTER IMAGE 2 SUBJECT DIRECTIVE (e.g. A playful golden retriever in astronaut gear)..."
-              rows="2"></textarea>
-          </div>
+        <div class="cmos-info-block">
+          <p>DEN-VULKAN HYPER ENGINE SETUP UTILITY - VERSION 1.03</p>
+          <p>MOD: CON: COLS=80 LINES=25 | COLOR: CYAN (0A)</p>
+          <p>SYSTEM STATUS: READY FOR HUMAN PROMPT ENHANCEMENT</p>
         </div>
 
-        <!-- Standard Single Text Prompt (Hidden in Niche Search & Style Transfer mode) -->
-        <div id="single-prompt-container" class="textarea-wrapper hidden">
-          <span class="prompt-symbol">INPUT_PROMPT_TEXT&gt;</span>
+        <!-- Hidden Model Selector for State Compatibility -->
+        <select id="model-select" class="hidden">
+          <option value="hyper_engine" selected>hyper_engine</option>
+        </select>
+
+        <div class="textarea-wrapper">
+          <span class="prompt-symbol">HUMAN_RAW_PROMPT_INPUT&gt;</span>
           <textarea id="raw-prompt"
-            placeholder="TYPE RAW PROMPT IDEA HERE (e.g. Write a blog post about video editing tips)..."
-            maxlength="2000"></textarea>
+            placeholder="TYPE RAW HUMAN PROMPT OR IDEA HERE (e.g. Create a python script for automated web scraping and data parsing)..."
+            rows="10" maxlength="3000"></textarea>
           <button id="clear-prompt-btn" class="btn-clear" title="Clear text"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
-        <!-- Enhancement & Generation Options -->
         <div class="options-bar text-right">
           <button id="enhance-btn" class="btn-primary btn-generate">
-            <span class="btn-text"><i class="fa-solid fa-play"></i> [RUN SYSTEM EXECUTE]</span>
+            <span class="btn-text">&gt; [RUN DEN-VULKAN HYPER EXECUTE]</span>
             <span class="btn-spinner hidden"><i class="fa-solid fa-spinner fa-spin"></i> EXECUTING_SYSTEM_CALL...</span>
           </button>
         </div>
@@ -145,27 +101,53 @@
         <div id="status-bar" class="status-bar hidden"></div>
       </section>
 
-      <!-- Results Display Section -->
-      <section class="results-section">
-        <div class="section-title-bar">
-          <h2><i class="fa-solid fa-terminal"></i> OUTPUT_BUFFER_RESULT</h2>
-          <span class="comparison-tag" id="active-model-tag"><i class="fa-solid fa-microchip"></i> ENGINE: SEO & AD REVENUE INTELLIGENCE</span>
+      <!-- Right Column Panel: System Monitor & Master Output Buffer -->
+      <section class="bios-panel bios-panel-right">
+        <div class="panel-header">
+          <h3><i class="fa-solid fa-microchip"></i> SYSTEM_MONITOR // OUTPUT_BUFFER</h3>
+          <span class="comparison-tag" id="active-model-tag">ENGINE: DEN-VULKAN ARCHITECT</span>
         </div>
 
         <div id="results-grid" class="results-grid">
           <!-- Initial Placeholder State -->
           <div class="empty-state card">
             <div class="empty-icon"><i class="fa-solid fa-terminal"></i></div>
-            <h3>SYSTEM_READY: ENTER QUERY AND PRESS EXECUTE</h3>
-            <p>Select target command mode above, input parameters, and click <strong>[RUN SYSTEM EXECUTE]</strong>.</p>
+            <h3>SYSTEM_READY: INPUT PROMPT AND CLICK EXECUTE</h3>
+            <p>Type your raw human prompt idea on the left console and click <strong>&gt; [RUN DEN-VULKAN HYPER EXECUTE]</strong>.</p>
           </div>
         </div>
       </section>
     </main>
 
-    <footer class="app-footer">
-      <div class="footer-container">
-        <p>SELECT A FILE AND CONFIRM OR PRESS CODE-? FOR HELP // SYS_STATUS: READY</p>
+    <!-- Bottom BIOS Status Banks & ASCII Banner -->
+    <footer class="bios-footer">
+      <div class="bios-banks-row">
+        <div class="bank-box">
+          <span class="bank-label">BANK 1</span>
+          <span class="bank-val">HYPER ENGINE ACTIVE</span>
+          <span class="bank-val">PROMPT ARCHITECT ONLINE</span>
+          <span class="bank-val">CYAN PHOSPHOR READY</span>
+        </div>
+        <div class="bank-box">
+          <span class="bank-label">BANK 2</span>
+          <span class="bank-val">LLM PROMPT READY</span>
+          <span class="bank-val">PARSE ENGINE ACTIVE</span>
+          <span class="bank-val">STATUS: OK</span>
+        </div>
+      </div>
+
+      <!-- Big Monospace ASCII Banner Header matching reference image -->
+      <div class="bios-ascii-banner">
+        <pre>
+  ___  ___ _  _   _   _ _   _ _    _  ___   _   _ 
+ |   \| __| \| | | | | | | | | |  | |/   \ | | | |
+ | |) | _|| .` | | \_/ | |_| | |__| | |_| || |_| |
+ |___/|___|_|\_|  \___/ \___/|____|_|_| |_| \___/ 
+        </pre>
+      </div>
+
+      <div class="footer-bottom-line">
+        <p>TITLE: DEN-VULKAN BIOS | MODE: CON COLS=80 LINES=30 | COLOR: 0A (CYAN)</p>
         <div class="footer-links">
           <a href="website.json" download><i class="fa-solid fa-download"></i> [DOWNLOAD_WORKFLOW_JSON]</a>
         </div>
@@ -202,11 +184,6 @@
           <label for="webhook-url-input">N8N_WEBHOOK_ENDPOINT_URL</label>
           <input type="url" id="webhook-url-input" placeholder="https://your-n8n-domain.com/webhook/enhance-promp"
             autocomplete="off">
-        </div>
-
-        <div class="form-group">
-          <label for="pollinations-key-input">POLLINATIONS_API_KEY (OPTIONAL)</label>
-          <input type="text" id="pollinations-key-input" placeholder="pk_... or sk_..." autocomplete="off">
         </div>
 
         <div id="webhook-test-result" class="test-result"></div>
